@@ -302,7 +302,7 @@
                       <Component id="JTxPriceFollow" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="JBBidFollow" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="7" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -331,7 +331,8 @@
         </Container>
         <Component class="javax.swing.JLabel" name="LabelPriceFollow">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Price:"/>
+            <Property name="text" type="java.lang.String" value="Bid $"/>
+            <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="JTxPriceFollow">

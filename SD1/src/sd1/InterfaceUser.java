@@ -186,7 +186,8 @@ public class InterfaceUser extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(JTFollowing);
 
-        LabelPriceFollow.setText("Price:");
+        LabelPriceFollow.setText("Bid $");
+        LabelPriceFollow.setToolTipText("");
 
         JBBidFollow.setText("Bid");
 
@@ -217,7 +218,7 @@ public class InterfaceUser extends javax.swing.JFrame {
                     .addComponent(LabelPriceFollow)
                     .addComponent(JTxPriceFollow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JBBidFollow))
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
