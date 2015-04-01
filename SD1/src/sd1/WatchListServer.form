@@ -81,7 +81,7 @@
                       <Component id="JTPriceServer" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="JButtonBidServer" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="7" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -110,7 +110,7 @@
         </Container>
         <Component class="javax.swing.JLabel" name="LabelPriceServer">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Price:"/>
+            <Property name="text" type="java.lang.String" value="Bid $"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="JTPriceServer">

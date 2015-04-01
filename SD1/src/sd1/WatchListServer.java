@@ -52,7 +52,7 @@ public class WatchListServer extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(JLServerBooks);
 
-        LabelPriceServer.setText("Price:");
+        LabelPriceServer.setText("Bid $");
 
         JButtonBidServer.setText("Bid");
 
@@ -83,7 +83,7 @@ public class WatchListServer extends javax.swing.JFrame {
                     .addComponent(LabelPriceServer)
                     .addComponent(JTPriceServer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(JButtonBidServer))
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
