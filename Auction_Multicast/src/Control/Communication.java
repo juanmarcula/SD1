@@ -166,11 +166,16 @@ public class Communication implements Runnable
     
     public void msgHelloEvent(String[] msg)
     {
-        if(!this.getPeerByPort(Integer.parseInt(msg[1])))
+        if(this.getPeerByPort(Integer.parseInt(msg[1])) == null)
         {
             Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
             peers.add(p);
-        }    
+        }
+        else if(this.getPeerByPort(Integer.parseInt(msg[1])).getServer().getPort() == Integer.parseInt(msg[1]))
+        {
+            //msg de hello do servidor, que faz?
+            
+        }
     }
     
     
@@ -201,11 +206,11 @@ public class Communication implements Runnable
         switch(Integer.parseInt(ins[0]))
         {
             case 10:
-                break;
+                msgBid(ins); break;
             case 11:
-                break;
+                msgAuctionBook(ins); break;
             case 12:
-                break;
+                msgEndAuction(ins); break;
         }
     }
     
@@ -244,14 +249,14 @@ public class Communication implements Runnable
         return peers;
     }
     
-    public boolean getPeerByPort(int port)
+    public Peer getPeerByPort(int port)
     {
         for(Peer p : this.getPeers())
         {
             if(p.getPort() == port)
-                return true;
+                return p;
         }
-        return false;
+        return null;
     }
 
     
@@ -285,9 +290,44 @@ public class Communication implements Runnable
         {
             Book b = this.getBookById(Integer.parseInt(msg[2]));
             if(b.getOwnerId() == Integer.parseInt(msg[1]))
+            {
                 b.endAuction();
+                //send msg para todos os que estão seguindo o livro - acabou
+               
+            }
         }
 
+        /**
+         * Envia uma atualização do livro para os seguidores desse livro
+         * @param b
+         */
+        public void sendToFollowers(Book b)
+        {
+        
+        }
+        
+        /**
+         * envia uma atualização do livro para quem botou ele a venda
+         * @param b
+         */
+        public void sendToAuctioneer(Book b)
+        {
+        
+        }
+        
+        /**
+         *Quando alguem deseja ver todos os livros no servidor, envia tudo
+         */
+        public void sendAll()
+        {
+        
+        }      
+        
+        /**
+         * no Run de cmm, depois do procedimento normal, se esse Peer for o server,
+         * a cada x s, ele chama esse metodo, que verifica se já deve encerrar o
+         * leilão desse livro por tempo
+         */
         public void updateList()
         {
             for(Book b : auctionbooks)
@@ -341,6 +381,7 @@ public class Communication implements Runnable
                    {
                        b.setCurrentBid(bid);
                        b.getBids().add(new Bids(clientId, bid));
+                       //Envia msg para todos os que estão seguindo esse livro para att os valores
                    }
                }
         }
