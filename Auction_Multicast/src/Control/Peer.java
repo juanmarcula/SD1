@@ -1,8 +1,11 @@
 package Control;
 
+import static java.lang.Thread.sleep;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author Laudelino
  */
-public class Peer 
+public class Peer implements Runnable
 {
     private int id;
     private String name;
@@ -23,23 +26,81 @@ public class Peer
     private int port;
     private PublicKey publicKey;
     
-    public Peer(int id, String name, String ip, int port, boolean me)
+    private Communication cmm;
+    
+    public Peer(String name, String ip, int port, boolean main)
     {
-        this.id = id;
         this.name = name;
-        this.priority = (int) Math.ceil(Math.random()*100);
-        this.ip = ip;
-        this.port = port;
-        this.isMyself = me;
+        this.setIp(ip);
+        this.setPort(port);
+        
+        if(main)
+            this.cmm = new Communication();
     }
 
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
+    @Override
+    public void run()
+    {
+        for(int i = 0; i < 10; i++)
+        {
+            sleep(100);
+            //Send hello message
+            cmm.sendMulticast("0;" + this.getName() + ";" + 
+                    this.getIp(1) + ";" + this.getPort() + ";");
+        }
+        //sleep(1000);
+        //verifica se é o de maior prioridade, se for, send server
+        if(isHighestPriority())
+            cmm.sendMulticast("1;" + this.getPort() + ";");
+        
+        //wait for a server to be elected
+        int dt = 0;
+        while(getServer() == null && dt < 1000)
+        {
+            sleep(10);
+            dt+=10;
+        }
+
     }
 
+    //Peers ops
+    public boolean isHighestPriority()
+    {
+        int max = -1;
+        int mbs = -1;
+        for(Peer p : cmm.getPeers())
+            if(p.getPort()> max)
+                mbs = p.getPort();
+        
+        if(mbs == this.port)
+            return true;
+        else
+            return false;
+    }
+    
+    public Peer getServer()
+    {
+        try
+        {
+             for(Peer p : peers)
+             {
+                 if(p.isServer == true)
+                     return p;
+             }
+             return null;
+        }
+        catch(Exception e)
+        {
+            System.out.println("getserver " + e.toString());
+            return null;
+        }
+    }
+
+    public void setAsServer()
+    {
+        this.isServer =  true;
+    }
+    
     /**
      * @return the name
      */
@@ -48,52 +109,14 @@ public class Peer
     }
 
     /**
-     * @return the priority
-     */
-    public int getPriority() {
-        return priority;
-    }
-
-    /**
-     * @return the isServer
-     */
-    public boolean isIsServer() {
-        return isServer;
-    }
-
-    /**
      * @param isServer the isServer to set
      */
-    public void setIsServer(boolean isServer) {
-        this.isServer = isServer;
-    }
-
-    /**
-     * @return the isAuctioneer
-     */
-    public boolean isIsAuctioneer() {
-        return isAuctioneer;
-    }
-
-    /**
-     * @param isAuctioneer the isAuctioneer to set
-     */
-    public void setIsAuctioneer(boolean isAuctioneer) {
-        this.isAuctioneer = isAuctioneer;
-    }
-
-    /**
-     * @return the isMyself
-     */
-    public boolean isIsMyself() {
-        return isMyself;
-    }
-
-    /**
-     * @param isMyself the isMyself to set
-     */
-    public void setIsMyself(boolean isMyself) {
-        this.isMyself = isMyself;
+    public void setServer(int port) 
+    {
+        for(Peer p : cmm.getPeers())
+            if(p.getPort() == port)
+                p.setAsServer();
+        
     }
 
     /**
@@ -168,5 +191,8 @@ public class Peer
     public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
+    
+    
+
     
 }

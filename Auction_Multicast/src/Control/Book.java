@@ -14,15 +14,16 @@ public class Book
     private int id;
     private String name;
     private String desc;
-    private float startingBid;
-    private float expectedBid;
-    private float maxBid;
-    private float currentBid;
+    private double startingBid;
+    private double expectedBid;
+    private double maxBid;
+    private double currentBid;
     private int auctionTime;
     private Date endTimeAuction;
     private boolean inAuction = true;
     private final ArrayList<Integer> following;
     private final ArrayList<Bids> bids;
+    private int ownerId;
     
     public Book()
     {
@@ -81,7 +82,7 @@ public class Book
     /**
      * @return the startingBid
      */
-    public float getStartingBid() 
+    public double getStartingBid() 
     {
         return startingBid;
     }
@@ -89,7 +90,7 @@ public class Book
     /**
      * @param startingBid the startingBid to set
      */
-    public void setStartingBid(float startingBid) 
+    public double setStartingBid(double startingBid) 
     {
         this.startingBid = startingBid;
     }
@@ -97,42 +98,42 @@ public class Book
     /**
      * @return the expectedBid
      */
-    public float getExpectedBid() {
+    public double getExpectedBid() {
         return expectedBid;
     }
 
     /**
      * @param expectedBid the expectedBid to set
      */
-    public void setExpectedBid(float expectedBid) {
+    public void setExpectedBid(double expectedBid) {
         this.expectedBid = expectedBid;
     }
 
     /**
      * @return the maxBid
      */
-    public float getMaxBid() {
+    public double getMaxBid() {
         return maxBid;
     }
 
     /**
      * @param maxBid the maxBid to set
      */
-    public void setMaxBid(float maxBid) {
+    public void setMaxBid(double maxBid) {
         this.maxBid = maxBid;
     }
 
     /**
      * @return the currentBid
      */
-    public float getCurrentBid() {
+    public double getCurrentBid() {
         return currentBid;
     }
 
     /**
      * @param currentBid the currentBid to set
      */
-    public void setCurrentBid(float currentBid) {
+    public void setCurrentBid(double currentBid) {
         this.currentBid = currentBid;
     }
     
@@ -212,5 +213,19 @@ public class Book
     public ArrayList<Bids> getBids() 
     {
         return bids;
+    }
+
+    /**
+     * @return the ownerId
+     */
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    /**
+     * @param ownerId the ownerId to set
+     */
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
     }
 }

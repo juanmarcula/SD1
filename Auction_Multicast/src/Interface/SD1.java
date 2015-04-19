@@ -5,6 +5,8 @@
  */
 
 package Interface;
+import Control.Peer;
+
 
 /**
  *
@@ -15,8 +17,19 @@ public class SD1 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    static int port = 7896;
+    static int nPeers = 4;
+    static String names[] = {"A", "B", "C", "D"};
+    public static void main(String[] args) 
+    {
+        for(int i = 0; i < nPeers; i++)
+        {
+            Peer p;
+            p = new Peer(names[i], "localhost", port, true);       
+            Thread t = new Thread((Runnable) p);
+            t.start();    
+            port++;
+        }
     }
     
 }

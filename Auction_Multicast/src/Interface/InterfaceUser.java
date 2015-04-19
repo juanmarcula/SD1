@@ -5,6 +5,8 @@
  */
 
 package Interface;
+import Control.Peer;
+import Control.Communication;
 
 /**
  *

@@ -1,6 +1,7 @@
 package Control;
 
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -8,6 +9,7 @@ import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +30,9 @@ public class Communication implements Runnable
     
     private DatagramSocket ucSocket;
     
-    public Communication(final int id, String name, final int port)
+    public Communication()
     {
         Thread multicastListener, unicastListener;
-        peers = new ArrayList<>();        
-		
-        //Add info about myself
-        myself = new Peer(id, name, "localhost", port, true);
         
         peers.add(myself);        
         multicastListener = new Thread()
@@ -101,28 +99,32 @@ public class Communication implements Runnable
         };
         unicastListener.start();
     }
-
+    
+    
     @Override
     public void run()
     {
-        sleep(1000);
-        //Send hello message
-        sendMulticast("0;" + myself.getId() + ";" + myself.getName() + ";" + 
-                myself.getIp(1) + ";" + myself.getPort() + ";");
-        
-        sleep(1000);
+        for(int i = 0; i < 10; i++)
+        {
+            sleep(100);
+            //Send hello message
+            this.sendMulticast("0;" + this.getName() + ";" + 
+                    this.getIp(1) + ";" + this.getPort() + ";");
+        }
+        //sleep(1000);
         //verifica se é o de maior prioridade, se for, send server
         if(isHighestPriority())
-                    sendMulticast("1;" + myself.getId() + ";");
+            this.sendMulticast("1;" + this.getPort() + ";");
         
         //wait for a server to be elected
-        while(server == null);
-        
-        //Se for o leiloeiro, envia livros a vender
-        
-        
+        int dt = 0;
+        while(getServer() == null && dt < 1000)
+        {
+            sleep(10);
+            dt+=10;
+        }
+
     }
-    
     public void initializeSockets()
     {
         try 
@@ -155,12 +157,22 @@ public class Communication implements Runnable
         switch(Integer.parseInt(ins[0]))
         {
             case 0:
-                break;
+                msgHelloEvent(ins); break;
             case 1:
                 break;
         }
         
     }
+    
+    public void msgHelloEvent(String[] msg)
+    {
+        if(!this.getPeerByPort(Integer.parseInt(msg[1])))
+        {
+            Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
+            peers.add(p);
+        }    
+    }
+    
     
     public void sendMulticast(String msg)
     {
@@ -188,12 +200,17 @@ public class Communication implements Runnable
         
         switch(Integer.parseInt(ins[0]))
         {
-            case 0:
+            case 10:
                 break;
-            case 1:
+            case 11:
+                break;
+            case 12:
                 break;
         }
     }
+    
+
+    
     
     public void sendUnicast(Peer p, String msg)
     {
@@ -222,29 +239,133 @@ public class Communication implements Runnable
         }
     }
     
-    
-    //Peers ops
-    public boolean isHighestPriority()
+    public ArrayList<Peer> getPeers()
     {
-        int max = -1;
-        int mbs = -1;
-        for(Peer p : peers)
-            if(p.getPriority() > max)
-                mbs = p.getId();
-        
-        if(mbs == myself.getId())
-            return true;
-        else
-            return false;
+        return peers;
     }
+    
+    public boolean getPeerByPort(int port)
+    {
+        for(Peer p : this.getPeers())
+        {
+            if(p.getPort() == port)
+                return true;
+        }
+        return false;
+    }
+
+    
+    public class Server
+    {
+        //books in the auction
+        private final ArrayList<Book> auctionbooks;
+        Calendar calendar;
+        int ids = 0;
+
+        public Server(int id, String name, String ip, int port, boolean me)
+        {
+            auctionbooks = new ArrayList<>();
+        }
+
+        public void msgBid(String[] msg)
+        {
+            this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
+                    Double.parseDouble(msg[3]));
+        }
+
+        public void msgAuctionBook(String[] msg)
+        {
+
+            this.registerBook(ids, msg[2], msg[4],Double.parseDouble(msg[3]), 
+                     Integer.parseInt(msg[5]), Integer.parseInt(msg[1]));
+            ids++;
+        }
+
+        public void msgEndAuction(String[] msg)
+        {
+            Book b = this.getBookById(Integer.parseInt(msg[2]));
+            if(b.getOwnerId() == Integer.parseInt(msg[1]))
+                b.endAuction();
+        }
+
+        public void updateList()
+        {
+            for(Book b : auctionbooks)
+            {
+                if(Calendar.getInstance().after(b.getEndTimeAuction()))
+                    b.endAuction();
+            }
+                
+        }
+        
+        
+        public Book getBookById(int id)
+        {
+            for(Book b : this.auctionbooks)
+            {
+                if(b.getId() == id)
+                    return b;
+            }
+            return null;
+        }
+
+        public void registerBook(int bid, String name, String desc, 
+                double startingBid, int auctionTime, int ownerId)
+        {
+            calendar = Calendar.getInstance();
+            Book b;
+            b = new Book();
+            b.setId(bid);
+            b.setName(name);
+            b.setDesc(desc);
+            b.setStartingBid(startingBid);
+            b.setAuctionTime(auctionTime);
+            b.setOwnerId(ownerId);
+
+            calendar.add(Calendar.SECOND, b.getAuctionTime());
+
+            b.setEndTimeAuction(calendar.getTime());
+
+            auctionbooks.add(b);
+
+            System.out.println(b.toString(1));
+        }
+
+
+        public void registerBid(int bookId, int clientId, double bid)
+        {
+           for(Book b : auctionbooks)
+               if(b.getId() == bookId)
+               {
+                   if(b.getCurrentBid() < bid && b.inAuction())
+                   {
+                       b.setCurrentBid(bid);
+                       b.getBids().add(new Bids(clientId, bid));
+                   }
+               }
+        }
+    }
+    
+    
 }
 /**
  Padrao de mensagens:
  * tipo;id;conteudo
  * 
+ * multicast
  * Tipos de mensagem:
  * 0 - hello - multicast, manda para a rede suas infos
- *          idsender;sendername;senderip;senderport
+ *          senderport;sendername;senderip;
  * 1 - helloServer - multicast, server avisa que continua ativo
- * 1 - 
+ * 2 - 
+ * 
+ * 
+ * unicast
+ * 10 - bid - 10;senderport;idbook;value
+ * 11 - registerbook - 11;senderport;bookname;value;description;time
+ * 12 - endeauction - 12;senderport;bookid;
+ * 13 - allbooksrequest - 13;senderport
+ * 14 - sendbookA - 14;bookname;value;description;time
+ * 15 - sendbookF - 15;bookname;value;description;time
+ * 16 - sendbookM - 16;bookname;value;description;time
  **/

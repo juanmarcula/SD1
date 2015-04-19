@@ -8,9 +8,9 @@ package Control;
 public class Bids 
 {
     private int clientId;
-    private float bid;
+    private double bid;
 
-    public Bids(int clientId, float bid)
+    public Bids(int clientId, double bid)
     {
         this.clientId = clientId;            
         this.bid = bid;
@@ -34,7 +34,7 @@ public class Bids
     /**
      * @return the bid
      */
-    public float getBid() 
+    public double getBid() 
     {
         return bid;
     }
@@ -42,7 +42,7 @@ public class Bids
     /**
      * @param bid the bid to set
      */
-    public void setBid(float bid) 
+    public void setBid(double bid) 
     {
         this.bid = bid;
     }
