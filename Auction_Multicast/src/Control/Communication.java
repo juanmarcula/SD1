@@ -13,6 +13,15 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+
+
+
 /**
  *
  * @author Laudelino
@@ -30,11 +39,13 @@ public class Communication implements Runnable
     
     private DatagramSocket ucSocket;
     
+    Encryption crypto;
+    
     public Communication()
     {
         Thread multicastListener, unicastListener;
         
-        peers.add(myself);        
+        
         multicastListener = new Thread()
         {
             @Override
@@ -152,7 +163,7 @@ public class Communication implements Runnable
      */
     public void onMulticastMessage(DatagramPacket in)
     {
-        String[] ins = new String(in.getData()).split(";");
+        String[] ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
         
         switch(Integer.parseInt(ins[0]))
         {
@@ -267,11 +278,25 @@ public class Communication implements Runnable
         Calendar calendar;
         int ids = 0;
 
-        public Server(int id, String name, String ip, int port, boolean me)
+        public Server()
         {
             auctionbooks = new ArrayList<>();
+            
+            for(Peer p : peers)
+            {
+                msgAskPublicKey(p);                
+            }
+            
+            
         }
 
+        public void msgAskPublicKey(Peer p)
+        {
+            sendUnicast(p, "17;");
+        }
+        
+        
+        
         public void msgBid(String[] msg)
         {
             this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
@@ -409,4 +434,6 @@ public class Communication implements Runnable
  * 14 - sendbookA - 14;bookname;value;description;time
  * 15 - sendbookF - 15;bookname;value;description;time
  * 16 - sendbookM - 16;bookname;value;description;time
+ * 17 - askPK - 17;serverport;
+ * 18 - receivePK - 18;port;key
  **/
