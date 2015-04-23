@@ -51,9 +51,10 @@ public class Peer implements Runnable
         this.name = name;
         this.setIp(ip);
         this.setPort(port);
-        initializeSockets();
+
         if(main)
         {
+              initializeSockets();
               Thread multicastListener, unicastListener;
 
 
@@ -139,8 +140,10 @@ public class Peer implements Runnable
         //sleep(1000);
         //verifica se é o de maior prioridade, se for, send server
         if(isHighestPriority())
+        {
             this.sendMulticast("1;" + this.getPort() + ";");
-        
+            System.out.println("Disse que é o server");
+        }
         //wait for a server to be elected
         int dt = 0;
         while(this.server == null && dt < 1000)
