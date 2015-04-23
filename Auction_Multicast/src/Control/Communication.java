@@ -119,17 +119,17 @@ public class Communication implements Runnable
         {
             sleep(100);
             //Send hello message
-            this.sendMulticast("0;" + this.getName() + ";" + 
-                    this.getIp(1) + ";" + this.getPort() + ";");
+            this.sendMulticast("0;" + this.myself.getName() + ";" + 
+                    this.myself.getIp(1) + ";" + this.myself.getPort() + ";");
         }
         //sleep(1000);
         //verifica se é o de maior prioridade, se for, send server
         if(isHighestPriority())
-            this.sendMulticast("1;" + this.getPort() + ";");
+            this.sendMulticast("1;" + this.myself.getPort() + ";");
         
         //wait for a server to be elected
         int dt = 0;
-        while(getServer() == null && dt < 1000)
+        while(this.server == null && dt < 1000)
         {
             sleep(10);
             dt+=10;
@@ -163,7 +163,7 @@ public class Communication implements Runnable
      */
     public void onMulticastMessage(DatagramPacket in)
     {
-        String[] ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+        String[] ins = new String(crypto.decryptMsg(this.myself.getPublicKey(),in.getData())).split(";");
         
         switch(Integer.parseInt(ins[0]))
         {

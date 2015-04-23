@@ -90,7 +90,7 @@ public class Book
     /**
      * @param startingBid the startingBid to set
      */
-    public double setStartingBid(double startingBid) 
+    public void setStartingBid(double startingBid) 
     {
         this.startingBid = startingBid;
     }
