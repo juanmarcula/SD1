@@ -124,7 +124,7 @@ public class Communication implements Runnable
         }
         //sleep(1000);
         //verifica se é o de maior prioridade, se for, send server
-        if(isHighestPriority())
+        //if(isHighestPriority())
             this.sendMulticast("1;" + this.myself.getPort() + ";");
         
         //wait for a server to be elected
@@ -217,11 +217,11 @@ public class Communication implements Runnable
         switch(Integer.parseInt(ins[0]))
         {
             case 10:
-                msgBid(ins); break;
+              //  msgBid(ins); break;
             case 11:
-                msgAuctionBook(ins); break;
+                //msgAuctionBook(ins); break;
             case 12:
-                msgEndAuction(ins); break;
+        //        msgEndAuction(ins); break;
         }
     }
     

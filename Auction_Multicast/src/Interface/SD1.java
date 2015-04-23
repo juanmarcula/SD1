@@ -22,7 +22,7 @@ public class SD1 {
     static String names[] = {"A", "B", "C", "D"};
     public static void main(String[] args) 
     {
-        for(int i = 0; i < nPeers; i++)
+        for(int i = 0; i < 2; i++)
         {
             Peer p;
             p = new Peer(names[i], "localhost", port, true);       

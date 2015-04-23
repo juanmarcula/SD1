@@ -47,10 +47,11 @@ public class Peer implements Runnable
     
     public Peer(String name, String ip, int port, boolean main)
     {
+        peers = new ArrayList<>();
         this.name = name;
         this.setIp(ip);
         this.setPort(port);
-        
+        initializeSockets();
         if(main)
         {
               Thread multicastListener, unicastListener;
@@ -68,6 +69,7 @@ public class Peer implements Runnable
                                     byte[] buffer = new byte[1000];
                                     DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                                     mcSocket.receive(messageIn);
+                                    onMulticastMessage(messageIn);
                                     System.out.println("Received:" + new String(messageIn.getData()));
                                 }	
                         }
@@ -81,8 +83,8 @@ public class Peer implements Runnable
                         }
                         finally 
                         {
-                            if(mcSocket != null) 
-                                mcSocket.close();
+                            //if(mcSocket != null) 
+                              //  mcSocket.close();
                         }
                     }
                 };
@@ -131,8 +133,8 @@ public class Peer implements Runnable
         {
             sleep(100);
             //Send hello message
-            this.sendMulticast("0;" + this.getName() + ";" + 
-                    this.getIp(1) + ";" + this.getPort() + ";");
+            this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
+                    this.getIp(1) + ";");
         }
         //sleep(1000);
         //verifica se é o de maior prioridade, se for, send server
@@ -312,8 +314,7 @@ public class Peer implements Runnable
      */
     public void onMulticastMessage(DatagramPacket in)
     {
-        String[] ins = new String(crypto.decryptMsg(this.getPublicKey(),in.getData())).split(";");
-        
+        String[] ins = new String(in.getData()).split(";");
         switch(Integer.parseInt(ins[0]))
         {
             case 0:
@@ -414,10 +415,13 @@ public class Peer implements Runnable
     
     public Peer getPeerByPort(int port)
     {
-        for(Peer p : this.getPeers())
+        if(this.getPeers()!=null)
         {
-            if(p.getPort() == port)
-                return p;
+            for(Peer p : this.getPeers())
+            {
+                if(p.getPort() == port)
+                    return p;
+            }
         }
         return null;
     }
