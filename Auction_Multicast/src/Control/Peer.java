@@ -54,9 +54,9 @@ public class Peer implements Runnable
     private DatagramSocket ucSocket;
     Encryption crypto;
     
-    private ArrayList<Book> following;
-    private ArrayList<Book> myOwn;
-    private ArrayList<Book> serverBooks;
+    public ArrayList<Book> following;
+    public ArrayList<Book> myOwn;
+    public ArrayList<Book> serverBooks;
     
     
     public Peer(String name, String ip, int port, boolean main)
@@ -669,6 +669,26 @@ public class Peer implements Runnable
         msg = msg.concat(description);
         msg = msg.concat(";");
         msg = msg.concat(time);
+        sendUnicast(this.getServer(),msg,true);
+        
+    }
+    
+    
+    /**
+     * Envia a mensgaem contendo a aposta 
+     * @param name
+     * @param value
+     * 
+     */
+    public void sendBidToServer(String name,String value)
+    {
+       //10 - bid - 10;senderport;idbook;value
+        String msg="10;";
+        msg = msg.concat("" +this.getPort());
+        msg = msg.concat(";");
+        msg = msg.concat(name);
+        msg = msg.concat(";");
+        msg = msg.concat(value);
         sendUnicast(this.getServer(),msg,true);
         
     }
