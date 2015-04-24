@@ -96,34 +96,6 @@ public class Book
     }
 
     /**
-     * @return the expectedBid
-     */
-    public double getExpectedBid() {
-        return expectedBid;
-    }
-
-    /**
-     * @param expectedBid the expectedBid to set
-     */
-    public void setExpectedBid(double expectedBid) {
-        this.expectedBid = expectedBid;
-    }
-
-    /**
-     * @return the maxBid
-     */
-    public double getMaxBid() {
-        return maxBid;
-    }
-
-    /**
-     * @param maxBid the maxBid to set
-     */
-    public void setMaxBid(double maxBid) {
-        this.maxBid = maxBid;
-    }
-
-    /**
      * @return the currentBid
      */
     public double getCurrentBid() {
@@ -213,6 +185,34 @@ public class Book
     public ArrayList<Bids> getBids() 
     {
         return bids;
+    }
+    
+    public int getWinner()
+    {
+        double max = -1;
+        int winner = -1;
+        for(Bids b : bids)
+        {
+            if(b.getBid() > max)
+            {
+                max = b.getBid();
+                winner = b.getClientId();
+            }
+        }
+        return winner;
+    }
+    
+    public double getWinnerValue()
+    {
+        double max = -1;
+        for(Bids b : bids)
+        {
+            if(b.getBid() > max)
+            {
+                max = b.getBid();
+            }
+        }
+        return max;
     }
 
     /**

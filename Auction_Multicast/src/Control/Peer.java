@@ -625,7 +625,13 @@ public class Peer implements Runnable
                      Integer.parseInt(msg[5]), Integer.parseInt(msg[1]));
             ids++;
         }
-
+        
+        public void msgWinner(Book b)
+        {
+            Peer p = getPeerByPort(b.getWinner());
+            sendMulticast("3;" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
+        }
+        
         public void msgEndAuction(String[] msg)
         {
             
@@ -797,7 +803,7 @@ public class Peer implements Runnable
  *          senderport;sendername;senderip;
  * 1 - helloServer - multicast, server avisa que continua ativo
  * 2 - 
- * 
+ * 3 - fimdeleilão - 3;nomevencedor;bookname;valor
  * 
  * unicast
  * 10 - bid - 10;senderport;idbook;value
