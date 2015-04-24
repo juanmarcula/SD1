@@ -166,6 +166,8 @@ public class Peer implements Runnable
             server.msgAskPublicKey();
             this.Client();
         }
+        getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
+        
         //Send public key
         //Encryption crypto = new Encryption();
         //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
@@ -428,13 +430,13 @@ public class Peer implements Runnable
             switch(Integer.parseInt(ins[0]))
             {
                 case 10:
-                    //msgBid(ins); 
+                    server.msgBid(ins); 
                     break;
                 case 11:
-                    //msgAuctionBook(ins); 
+                    server.msgAuctionBook(ins); 
                     break;
                 case 12:
-                    //msgEndAuction(ins); 
+                    server.msgEndAuction(ins); 
                     break;
                 case 17:
                     this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded()); break;
