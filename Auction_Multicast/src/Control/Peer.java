@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 /**
  *
@@ -149,11 +150,13 @@ public class Peer implements Runnable
         //verifica se é o de maior prioridade, se for, send server
         while(peers.size()<4);
         
+        this.isServer = false;
         if(isHighestPriority())
         {
             this.sendMulticast("1;" + this.getPort() + ";");
             System.out.println(this.getName() + " Disse que é o server");
             server = new Server();
+            this.isServer = true;
         }
         else
             sleeptc(100);
@@ -407,9 +410,7 @@ public class Peer implements Runnable
                 
                 this.HelloServidor=true;
             }
-            
- 
-            
+
         }
     }
     
@@ -420,7 +421,8 @@ public class Peer implements Runnable
     public void msgServerBooks(String [] msg)
     {
         // 14 - sendbookA - 14;bookname;value;description;time
-        for(Book b : this.serverBooks)
+        
+        for(Book b : serverBooks)
         {
             if(b.getName().equals(msg[1]))
             {
@@ -429,9 +431,9 @@ public class Peer implements Runnable
         }
         Book b = new Book();
         b.setName(msg[1]);
-        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
-        b.setDesc(msg[2]);
+        b.setDesc(msg[3]);
         serverBooks.add(b);
     }
     
@@ -451,7 +453,7 @@ public class Peer implements Runnable
         }
         Book b = new Book();
         b.setName(msg[1]);
-        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
         b.setDesc(msg[2]);
         following.add(b);
@@ -473,7 +475,7 @@ public class Peer implements Runnable
         }
         Book b = new Book();
         b.setName(msg[1]);
-        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
         b.setDesc(msg[2]);
         myOwn.add(b);
@@ -504,7 +506,7 @@ public class Peer implements Runnable
      */
     public void onUnicastMessage(DatagramPacket in)
     {
-        String[] ins;
+        String[] ins = null;
 /*        if(this.getServer().getPort() != && in.getPort()!=this.getServer().getPort())
         {
             ins = new String(in.getData()).split(";");
@@ -516,15 +518,52 @@ public class Peer implements Runnable
             
         }*/
         Peer p = getPeerByPort(in.getPort());
-        if(!p.serverHasPk)
+        System.out.println("Sou servidor? " + getPeerByPort(port).isServer);
+        
+ /*       if(p != null && p.isServer)// && p.getPort()!=getPeerByPort(port))
+            ins = new String(in.getData()).split(";");
+        else if(getPeerByPort(port).isServer != true && !p.serverHasPk)
             ins = new String(in.getData()).split(";");
         else
         {
             p = getPeerByPort(in.getPort());
             ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
         }
+   */     
+        if(p!= null && p.isServer)
+        {
+            try
+            {
+                System.out.println("A");
+                ins = new String(in.getData()).split(";");
+                String a  = ins[0];
+                //System.out.println("AonUM " + this.getName() + " " + Arrays.toString(ins));
+            }
+            catch(Exception e)//finally//(NumberFormatException e)
+            {
+                System.out.println("B");
+                p = getPeerByPort(in.getPort());
+                ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
+            }/*
+            catch(Exception e)
+            {
+                System.out.println("B");
+                p = getPeerByPort(in.getPort());
+                ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
+            }*/
+        }
+        else
+        {
+            System.out.println("C");
+            p = getPeerByPort(in.getPort());
+            ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+            System.out.println("ConUM " + this.getName() + " " + Arrays.toString(ins));
+        }
         if(ins.length>0)
         {
+            System.out.println("onUM" + this.getName() + " " + Arrays.toString(ins));
             switch(Integer.parseInt(ins[0]))
             {
                 case 10:
@@ -673,7 +712,6 @@ public class Peer implements Runnable
         
     }
     
-    
     /**
      * Envia a mensgaem contendo a aposta 
      * @param name
@@ -783,7 +821,7 @@ public class Peer implements Runnable
          */
         public void msgBid(String[] msg)
         {
-            this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
+            this.registerBid(msg[2], Integer.parseInt(msg[1]), 
                     Double.parseDouble(msg[3]));
         }
 
@@ -923,12 +961,12 @@ public class Peer implements Runnable
                     String msg ="14;";
                     msg = msg.concat(b.getName());
                     msg = msg.concat(";");
-                    msg = msg.concat("" +b.getCurrentBid());
+                    msg = msg.concat("" + b.getCurrentBid());
                     msg = msg.concat(";");
                     msg = msg.concat(b.getDesc());
                     msg = msg.concat(";");
-                    msg = msg.concat(b.getEndTimeAuction().toString());
-                    sendUnicast(p,msg,true);
+                    msg = msg.concat("" + b.getAuctionTime());
+                    sendUnicast(p, msg, false);
                 }
             }
         }      
@@ -1006,10 +1044,10 @@ public class Peer implements Runnable
          * @param clientId
          * @param bid
          */
-        public void registerBid(int bookId, int clientId, double bid)
+        public void registerBid(String bookId, int clientId, double bid)
         {
            for(Book b : auctionbooks)
-               if(b.getId() == bookId)
+               if(b.getName().equals(bookId))
                {
                    if(b.getCurrentBid() < bid && b.inAuction())
                    {
@@ -1038,7 +1076,7 @@ public class Peer implements Runnable
  * 3 - fimdeleilão - 3;nomevencedor;bookname;valor
  * 
  * unicast
- * 10 - bid - 10;senderport;idbook;value
+ * 10 - bid - 10;senderport;bookname;value
  * 11 - registerbook - 11;senderport;bookname;value;description;time
  * 12 - endeauction - 12;senderport;bookid;
  * 13 - allbooksrequest - 13;senderport

@@ -19,7 +19,7 @@ public class SD1 {
      */
     static int port = 7896;
     static int nPeers = 4;
-    static String names[] = {"A", "B", "C", "D"};
+    static String names[] = {"X", "Y", "Z", "W"};
     public static void main(String[] args) 
     {
         for(int i = 0; i < nPeers; i++)
