@@ -61,23 +61,22 @@ public class Peer implements Runnable
         this.name = name;
         this.setIp(ip);
         this.setPort(port);
-        this.serverHasPk = false;
-        
-        ActionListener action = new ActionListener() {  
-            public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) {  
-                if(Peer.this.HelloServidor==false)
-                {
-                    Peer.this.ServidorDown=true;
-                    Peer.this.msgServerNotAvailable();
-                   
-                }  
-            }  
-        }; 
-        this.timerHelloServidor = new Timer(1000,action); //ativa a cada 1000 (1 segundo)
-        
 
         if(main)
         {
+              this.serverHasPk = false;
+                ActionListener action = new ActionListener() {  
+                public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) {  
+                    if(Peer.this.HelloServidor==false)
+                    {
+                        Peer.this.ServidorDown=true;
+                        Peer.this.msgServerNotAvailable();
+
+                    }  
+                }  
+                }; 
+                this.timerHelloServidor = new Timer(1000,action); //ativa a cada 1000 (1 segundo)
+                
               initializeSockets();
               Thread multicastListener;
 
@@ -134,19 +133,23 @@ public class Peer implements Runnable
         }
         //sleeptc(1000);
         //verifica se é o de maior prioridade, se for, send server
+        while(peers.size()<4);
+        
         if(isHighestPriority())
         {
             this.sendMulticast("1;" + this.getPort() + ";");
             System.out.println(this.getName() + " Disse que é o server");
             server = new Server();
         }
+        else
+            sleeptc(100);
             
         //wait for a server to be elected
         int dt = 0;
         while(this.getServer() == null && dt < 1000)
         {
             sleeptc(10);
-            dt+=10;
+            dt+=1;
         }
         if(dt>=1000)
             System.out.println(this.getName() + " Não achou o server");
@@ -167,7 +170,7 @@ public class Peer implements Runnable
             this.Client();
         }
         getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
-        
+        getPeerByPort(this.port).serverHasPk = true;
         //Send public key
         //Encryption crypto = new Encryption();
         //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
@@ -409,20 +412,22 @@ public class Peer implements Runnable
     public void onUnicastMessage(DatagramPacket in)
     {
         String[] ins;
-        if(in.getPort()!=this.getServer().getPort())
+/*        if(this.getServer().getPort() != && in.getPort()!=this.getServer().getPort())
         {
             ins = new String(in.getData()).split(";");
             if(Integer.parseInt(ins[0]) == 44)
             {
                 //deu merda no servidor, me avisaram
+                return;
             }
-            return;
-        }
-        if(!serverHasPk)
+            
+        }*/
+        Peer p = getPeerByPort(in.getPort());
+        if(!p.serverHasPk)
             ins = new String(in.getData()).split(";");
         else
         {
-            Peer p = getPeerByPort(in.getPort());
+            p = getPeerByPort(in.getPort());
             ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
         }
         if(ins.length>0)
@@ -552,7 +557,7 @@ public class Peer implements Runnable
                     byte[] buffer;
                     while(true)
                     {
-                        buffer = new byte[1000];
+                        buffer = new byte[128];
                         DatagramPacket request = new DatagramPacket(buffer, buffer.length);
                         ucSocket.receive(request);     
                         System.out.println(getName() + " Received:" + new String(request.getData()));
@@ -671,6 +676,7 @@ public class Peer implements Runnable
                 {
                     sendUnicast(p, "17;",false);
                     p.setPublicKey(msgReceivePk());
+                    p.serverHasPk = true;
                 }
             }
             
