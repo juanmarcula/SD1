@@ -534,17 +534,21 @@ public class Peer implements Runnable
         {
             try
             {
-                System.out.println("A");
-                ins = new String(in.getData()).split(";");
-                String a  = ins[0];
-                //System.out.println("AonUM " + this.getName() + " " + Arrays.toString(ins));
+                String a;
+                System.out.println("B-");
+                p = getPeerByPort(in.getPort());
+                if(p.getPublicKey()!=null)
+                    ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+                else
+                     a = ins[5];
+                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
             }
             catch(Exception e)//finally//(NumberFormatException e)
             {
-                System.out.println("B");
-                p = getPeerByPort(in.getPort());
-                ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
-                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
+                System.out.println("A-");
+                ins = new String(in.getData()).split(";");
+                String a  = ins[0];
+                System.out.println("AonUM " + this.getName() + " " + Arrays.toString(ins));
             }/*
             catch(Exception e)
             {
