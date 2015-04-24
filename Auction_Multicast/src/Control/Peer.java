@@ -40,6 +40,10 @@ public class Peer implements Runnable
     private Server server;
     private ArrayList<Peer> peers;
     
+    private Timer timerHelloServidor;
+    private boolean HelloServidor =false;
+    private boolean ServidorDown=false;
+    
     private MulticastSocket mcSocket;
     private final String MULTICAST_IP = "228.5.6.7";
     private InetAddress MULTICAST_GROUP;
@@ -56,6 +60,19 @@ public class Peer implements Runnable
         this.setIp(ip);
         this.setPort(port);
         this.serverHasPk = false;
+        
+        ActionListener action = new ActionListener() {  
+            public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) {  
+                if(Peer.this.HelloServidor==false)
+                {
+                    Peer.this.ServidorDown=true;
+                    Peer.this.msgServerNotAvailable();
+                   
+                }  
+            }  
+        }; 
+        this.timerHelloServidor = new Timer(1000,action); //ativa a cada 1000 (1 segundo)
+        
 
         if(main)
         {
@@ -351,11 +368,12 @@ public class Peer implements Runnable
             if(this.getPeerByPort(Integer.parseInt(msg[1])).isServer == false)
             {
                 this.getPeerByPort(Integer.parseInt(msg[1])).setAsServer();
-                //inicia o timer aqui
+                this.timerHelloServidor.start();
             }
             else
             {
             //seta a variavel em true
+                this.HelloServidor=true;
             }
             
  
