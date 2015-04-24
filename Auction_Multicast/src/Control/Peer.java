@@ -323,7 +323,7 @@ public class Peer implements Runnable
             case 0:
                 msgHelloEvent(ins); break;
             case 1:
-                break;
+                msgHelloEvent(ins); break;
         }
         
     }
@@ -335,8 +335,11 @@ public class Peer implements Runnable
             Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
             peers.add(p);
         }
-        else if(this.getPeerByPort(Integer.parseInt(msg[1])).getServer().getPort() == Integer.parseInt(msg[1]))
+        else if(msg[0] == "1")
         {
+            this.getPeerByPort(Integer.parseInt(msg[1])).isServer = true;
+            
+            //this.getPeerByPort(Integer.parseInt(msg[1])).getServer().getPort() == Integer.parseInt(msg[1])
             //msg de hello do servidor, que faz?
             
         }
