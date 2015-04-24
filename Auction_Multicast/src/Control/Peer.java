@@ -66,11 +66,17 @@ public class Peer implements Runnable
         {
               this.serverHasPk = false;
                 ActionListener action = new ActionListener() {  
-                public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) {  
-                    if(Peer.this.HelloServidor==false)
+
+                public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) 
+                {  
+                    if(getServer().getPort() == getPort())
+                        server.updateList();
+                //System.out.println("tick");
+                    if(HelloServidor==false)
                     {
-                        Peer.this.ServidorDown=true;
-                        Peer.this.msgServerNotAvailable();
+                        ServidorDown=true;
+                        msgServerNotAvailable();
+
 
                     }  
                 }  
@@ -197,6 +203,7 @@ public class Peer implements Runnable
         }
     }
     //Peers ops
+    
     public boolean isHighestPriority()
     {
         int max = -1;
@@ -242,6 +249,7 @@ public class Peer implements Runnable
     }
 
     /**
+     * @param port
      * @param isServer the isServer to set
      */
     public void setServer(int port) 
@@ -325,6 +333,9 @@ public class Peer implements Runnable
         this.publicKey = publicKey;
     }
     
+    /**
+     * Inicializa os objetos de sockets
+     */
     public void initializeSockets()
     {
         try 
@@ -363,6 +374,11 @@ public class Peer implements Runnable
         
     }
     
+    /**
+     * Trata a mensagem do tipo Hello. Se não conhecer quem mandou, adiciona
+     * se for o servidor quem mandou, não da erro de inatividade do servidor
+     * @param msg
+     */
     public void msgHelloEvent(String[] msg)
     {
         if(this.getPeerByPort(Integer.parseInt(msg[1])) == null)
@@ -380,6 +396,7 @@ public class Peer implements Runnable
             else
             {
             //seta a variavel em true
+                
                 this.HelloServidor=true;
             }
             
@@ -388,7 +405,10 @@ public class Peer implements Runnable
         }
     }
     
-    
+    /**
+     * Envia a mensagem msg para o grupo multicast
+     * @param msg
+     */
     public void sendMulticast(String msg)
     {
         byte [] m = msg.getBytes();
@@ -405,8 +425,7 @@ public class Peer implements Runnable
     }
         
     /**     
-     * When a package is received on the unicast thread, this "event" is 
-     * called, it process the message and take the appropriate approach.
+     * trata o recebimento de pacotes unicast
      * @param in
      */
     public void onUnicastMessage(DatagramPacket in)
@@ -451,9 +470,13 @@ public class Peer implements Runnable
         }
     }
     
-
-    
-    
+    /**
+     * Envia mensagem unicast para um peer p, com a mensagem msg e diz se deve 
+     * ou nao ser encriptada
+     * @param p
+     * @param msg
+     * @param encry
+     */
     public void sendUnicast(Peer p, String msg,boolean encry)
     {
         byte [] m = msg.getBytes();
@@ -472,6 +495,10 @@ public class Peer implements Runnable
         }
     }
     
+    /**
+     * Thread.sleep com trycatchs
+     * @param ms
+     */
     public void sleeptc(int ms)
     {
         try 
@@ -484,11 +511,20 @@ public class Peer implements Runnable
         }
     }
     
+    /**
+     * Retorna todos os peers
+     * @return
+     */
     public ArrayList<Peer> getPeers()
     {
         return peers;
     }
     
+    /**
+     * Retorna um peer, dado sua id(porta)
+     * @param port
+     * @return
+     */
     public Peer getPeerByPort(int port)
     {
         if(this.getPeers()!=null)
@@ -502,6 +538,9 @@ public class Peer implements Runnable
         return null;
     }
 
+    /**
+     * Envia mensagem unicast avisando que o servidor caiu
+     */
     public void msgServerNotAvailable()
     {
         for(Peer p : peers)
@@ -510,6 +549,10 @@ public class Peer implements Runnable
         }            
     }
     
+    /**
+     * Envia para o servidor a mensagem pedindo para encerrar o leilao
+     * @param bookname
+     */
     public void EndAuction(String bookname)
     {
         //12;senderport;bookname;
@@ -520,6 +563,13 @@ public class Peer implements Runnable
         sendUnicast(this.getServer(),msg,true);
     }
     
+    /**
+     * Envia a mensgaem contendo o livro pro servidor para ser leiloado
+     * @param name
+     * @param value
+     * @param description
+     * @param time
+     */
     public void sendBookToServer(String name,String value,String description,String time)
     {
         //11;senderport;bookname;value;description;time
@@ -537,6 +587,9 @@ public class Peer implements Runnable
         
     }
     
+    /**
+     * Envia o pedido pro servidor enviar todos os livros
+     */
     public void RequestAllBooks()
     {
         String msg="13;";
@@ -544,6 +597,9 @@ public class Peer implements Runnable
         sendUnicast(this.getServer(),msg,true);
     }
     
+    /**
+     * Inicia a thread que ouve as mensagens unicast que os clientes recebem
+     */
     public void Client()
     {
         Thread unicastListener;
@@ -586,7 +642,9 @@ public class Peer implements Runnable
         unicastListener.start();
     }
     
-    
+    /**
+    * Metodos que so servidor vai usar
+    */
     public class Server
     {
         //books in the auction
@@ -594,6 +652,7 @@ public class Peer implements Runnable
         Calendar calendar;
         int ids = 0;
 
+ 
         public Server()
         {
             auctionbooks = new ArrayList<>();
@@ -612,12 +671,20 @@ public class Peer implements Runnable
             
         }
 
+        /**
+         * Recebe do onUnicastMsg um lance em um livro
+         * @param msg
+         */
         public void msgBid(String[] msg)
         {
             this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
                     Double.parseDouble(msg[3]));
         }
 
+        /**
+         * Recebe do onUnicastMsg um livro a ser leiloado
+         * @param msg
+         */
         public void msgAuctionBook(String[] msg)
         {
 
@@ -626,6 +693,10 @@ public class Peer implements Runnable
             ids++;
         }
         
+        /**
+         * Envia o unicast com o vencedor do livro, quando acaba o leilao
+         * @param b
+         */
         public void msgWinner(Book b)
         {
             Peer p = getPeerByPort(b.getWinner());
@@ -635,6 +706,10 @@ public class Peer implements Runnable
                 sendMulticast("3;nowinner;" + b.getName() + ";" + b.getWinnerValue());
         }
         
+        /**
+         * Encerra o leilao de um livro, se quem enviou for o dono
+         * @param msg
+         */
         public void msgEndAuction(String[] msg)
         {
             
@@ -649,6 +724,10 @@ public class Peer implements Runnable
             }
         }
 
+        /**
+         * Recebe a chave publica de um cliente
+         * @return
+         */
         public PublicKey msgReceivePk()
         {
             byte[] buffer = new byte[165];
@@ -680,6 +759,9 @@ public class Peer implements Runnable
             return null;
         }
 
+        /**
+         * Pede a chave publica a um cliente e espera a sua resposta
+         */
         public void msgAskPublicKey()
         {
             for(Peer p : peers)
@@ -700,7 +782,10 @@ public class Peer implements Runnable
          */
         public void sendToFollowers(Book b)
         {
-        
+            Peer p = getPeerByPort(port);
+            if(p!=null)
+                sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() 
+                    + ";" + b.getEndTimeAuction(), false);
         }
         
         /**
@@ -709,7 +794,13 @@ public class Peer implements Runnable
          */
         public void sendToAuctioneer(Book b)
         {
-        
+            for(int port : b.getFollowing())
+            {
+                Peer p = getPeerByPort(port);
+                if(p!=null)
+                    sendUnicast(p, "16;" + b.getName() + ";"  + b.getWinnerValue() 
+                        + ";" + b.getEndTimeAuction(), false);
+            }
         }
         
         /**
@@ -738,9 +829,12 @@ public class Peer implements Runnable
          */
         public void updateList()
         {
+            
             for(Book b : auctionbooks)
             {
-                if(Calendar.getInstance().after(b.getEndTimeAuction()))
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(b.getEndTimeAuction());
+                if(Calendar.getInstance().after(cal) && b.inAuction())
                 {
                     b.endAuction();
                     msgWinner(b);
@@ -749,7 +843,11 @@ public class Peer implements Runnable
                 
         }
         
-        
+        /**
+         * retorna o livro dado o nome
+         * @param name
+         * @return
+         */
         public Book getBookByName(String name)
         {
             for(Book b : this.auctionbooks)
@@ -760,6 +858,15 @@ public class Peer implements Runnable
             return null;
         }
 
+        /**
+         * adiciona o livro na lista de sendo leiloados
+         * @param bid
+         * @param name
+         * @param desc
+         * @param startingBid
+         * @param auctionTime
+         * @param ownerId
+         */
         public void registerBook(int bid, String name, String desc, 
                 double startingBid, int auctionTime, int ownerId)
         {
@@ -782,7 +889,12 @@ public class Peer implements Runnable
             System.out.println(b.toString(1));
         }
 
-
+        /**
+         *  Adiciona um lance ao livro
+         * @param bookId
+         * @param clientId
+         * @param bid
+         */
         public void registerBid(int bookId, int clientId, double bid)
         {
            for(Book b : auctionbooks)
@@ -793,6 +905,8 @@ public class Peer implements Runnable
                        b.setCurrentBid(bid);
                        b.getBids().add(new Bids(clientId, bid));
                        //Envia msg para todos os que estão seguindo esse livro para att os valores
+                       sendToAuctioneer(b);
+                       sendToFollowers(b);
                    }
                }
         }
@@ -819,7 +933,7 @@ public class Peer implements Runnable
  * 13 - allbooksrequest - 13;senderport
  * 14 - sendbookA - 14;bookname;value;description;time
  * 15 - sendbookF - 15;bookname;value;description;time
- * 16 - sendbookM - 16;bookname;value;description;time
+ * 16 - sendbookO - 16;bookname;value;description;time
  * 17 - sendPKtoServer - 17;port;key
  * 44 - erro de servidor 44;
  

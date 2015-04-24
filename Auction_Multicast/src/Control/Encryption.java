@@ -32,10 +32,18 @@ public class Encryption
             Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
         }
         SecureRandom random = null;
-        try {
+        try 
+        {
             random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-        } catch (NoSuchAlgorithmException ex) {Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchProviderException ex) {Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);}
+        } 
+        catch (NoSuchAlgorithmException ex) 
+        {
+            Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        catch (NoSuchProviderException ex) 
+        {
+            Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         keyGen.initialize(1024, random);
         KeyPair pair = keyGen.generateKeyPair();
@@ -49,27 +57,35 @@ public class Encryption
         return publicKey;
     }
     
-    public byte[] encryptMsg(byte[] msg) {
+    public byte[] encryptMsg(byte[] msg) 
+    {
         Cipher cipher;
         byte[] cipherText = null;
-        try {
+        try 
+        {
             cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.ENCRYPT_MODE, privateKey);
             cipherText = cipher.doFinal(msg);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) 
+        {
             Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
         }
         return cipherText;
     }
 
-    public byte[] decryptMsg(Key pk, byte[] cipherText) {
+    public byte[] decryptMsg(Key pk, byte[] cipherText) 
+    {
 
         byte[] msg = null;
-        try {
+        try 
+        {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, pk);
             msg = cipher.doFinal(cipherText);
-        } catch (Exception ex) {
+        } 
+        catch (Exception ex) 
+        {
             Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
         }
 
