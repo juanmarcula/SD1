@@ -59,10 +59,7 @@ public class WatchListServer extends javax.swing.JFrame {
 
         JLServerBooks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Name", "Price", "Time", "Description"
