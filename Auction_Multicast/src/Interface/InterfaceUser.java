@@ -319,7 +319,7 @@ public class InterfaceUser extends javax.swing.JFrame {
        Book B = new Book();
        B.setName(name);
        B.setDesc(description);
-       B.setStartingBid(Integer.parseInt(value));
+       B.setStartingBid(Double.parseDouble(value));
        B.setAuctionTime(Integer.parseInt(time));
        this.MyBooks.add(B);
        DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
