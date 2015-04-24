@@ -413,6 +413,10 @@ public class Peer implements Runnable
         }
     }
     
+    /**
+     * trata o recebimento de todos os livros que estão no servidor
+     * @param msg 
+     */
     public void msgServerBooks(String [] msg)
     {
         // 14 - sendbookA - 14;bookname;value;description;time
@@ -431,6 +435,10 @@ public class Peer implements Runnable
         serverBooks.add(b);
     }
     
+    /**
+     * trata o recebimento dos livros que estou interessado
+     * @param msg 
+     */
     public void msgFollowingBooks(String [] msg)
     {
         // 15 - sendbookF - 14;bookname;value;description;time
@@ -449,6 +457,10 @@ public class Peer implements Runnable
         following.add(b);
     }
     
+    /**
+     * Trata o recebimento de atualização dos livros que estou leiloando
+     * @param msg 
+     */
     public void msgMyOwnBooks(String [] msg)
     {
         // 15 - sendbookF - 14;bookname;value;description;time
