@@ -30,6 +30,7 @@ public class Peer implements Runnable
     private boolean isServer;
     private boolean isAuctioneer;
     private boolean isMyself;
+    private boolean serverHasPk;
     private int timeOutCounter;
     private String ip;
     private int port;
@@ -54,6 +55,7 @@ public class Peer implements Runnable
         this.name = name;
         this.setIp(ip);
         this.setPort(port);
+        this.serverHasPk = false;
 
         if(main)
         {
@@ -163,6 +165,7 @@ public class Peer implements Runnable
             out = new DatagramPacket(m, m.length, p.getIp(), p.getPort());
             ucSocket.send(out);
             System.out.println(this.getName() + " mandei pk ");
+            this.serverHasPk = true;
         } 
         catch (IOException e) 
         {
@@ -383,23 +386,41 @@ public class Peer implements Runnable
      */
     public void onUnicastMessage(DatagramPacket in)
     {
-        String[] ins = new String(in.getData()).split(";");
-        
-        switch(Integer.parseInt(ins[0]))
+        String[] ins;
+        if(in.getPort()!=this.getServer().getPort())
         {
-            case 10:
-                //msgBid(ins); 
-                break;
-            case 11:
-                //msgAuctionBook(ins); 
-                break;
-            case 12:
-                //msgEndAuction(ins); 
-                break;
-            case 17:
-                this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded()); break;
-            default:
-                break;
+            ins = new String(in.getData()).split(";");
+            if(Integer.parseInt(ins[0]) == 44)
+            {
+                //deu merda no servidor, me avisaram
+            }
+            return;
+        }
+        if(!serverHasPk)
+            ins = new String(in.getData()).split(";");
+        else
+        {
+            Peer p = getPeerByPort(in.getPort());
+            ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+        }
+        if(ins.length>0)
+        {
+            switch(Integer.parseInt(ins[0]))
+            {
+                case 10:
+                    //msgBid(ins); 
+                    break;
+                case 11:
+                    //msgAuctionBook(ins); 
+                    break;
+                case 12:
+                    //msgEndAuction(ins); 
+                    break;
+                case 17:
+                    this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded()); break;
+                default:
+                    break;
+            }
         }
     }
     
@@ -451,6 +472,14 @@ public class Peer implements Runnable
         return null;
     }
 
+    public void msgServerNotAvailable()
+    {
+        for(Peer p : peers)
+        {
+                sendUnicast(p, "44;");
+        }            
+    }
+    
     public void Client()
     {
         Thread unicastListener;
@@ -688,6 +717,7 @@ public class Peer implements Runnable
  * 15 - sendbookF - 15;bookname;value;description;time
  * 16 - sendbookM - 16;bookname;value;description;time
  * 17 - sendPKtoServer - 17;port;key
+ * 44 - erro de servidor 44;
  
  **/    
     
