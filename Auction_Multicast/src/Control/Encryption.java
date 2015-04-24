@@ -62,12 +62,12 @@ public class Encryption
         return cipherText;
     }
 
-    public byte[] decryptMsg(Key priv, byte[] cipherText) {
+    public byte[] decryptMsg(Key pk, byte[] cipherText) {
 
         byte[] msg = null;
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.DECRYPT_MODE, priv);
+            cipher.init(Cipher.DECRYPT_MODE, pk);
             msg = cipher.doFinal(cipherText);
         } catch (Exception ex) {
             Logger.getLogger(Encryption.class.getName()).log(Level.SEVERE, null, ex);
