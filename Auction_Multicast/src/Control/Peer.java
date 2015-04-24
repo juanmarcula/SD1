@@ -127,12 +127,12 @@ public class Peer implements Runnable
         //run comunication
         for(int i = 0; i < 2; i++)
         {
-            sleep(100);
+            sleeptc(100);
             //Send hello message
             this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
                     this.getIp(1) + ";");
         }
-        //sleep(1000);
+        //sleeptc(1000);
         //verifica se é o de maior prioridade, se for, send server
         if(isHighestPriority())
         {
@@ -145,7 +145,7 @@ public class Peer implements Runnable
         int dt = 0;
         while(this.getServer() == null && dt < 1000)
         {
-            sleep(10);
+            sleeptc(10);
             dt+=10;
         }
         if(dt>=1000)
@@ -462,7 +462,7 @@ public class Peer implements Runnable
         }
     }
     
-    public void sleep(int ms)
+    public void sleeptc(int ms)
     {
         try 
         {
@@ -553,6 +553,19 @@ public class Peer implements Runnable
         public Server()
         {
             auctionbooks = new ArrayList<>();
+            Thread sendhello;
+            sendhello = new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        sendMulticast("1;" + getPort() + ";");
+                        sleeptc(1000);
+                        
+                    }
+                };
+                sendhello.start();
+            
         }
 
         public void msgBid(String[] msg)
