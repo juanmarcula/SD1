@@ -45,7 +45,6 @@ public class Peer implements Runnable
     private final int MULTICAST_PORT = 6789;
     
     private DatagramSocket ucSocket;
-    private DatagramSocket ucSocketSender;
     Encryption crypto;
     
     
