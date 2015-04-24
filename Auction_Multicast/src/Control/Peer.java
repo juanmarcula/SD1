@@ -532,6 +532,13 @@ public class Peer implements Runnable
         
     }
     
+    public void RequestAllBooks()
+    {
+        String msg="13;";
+        msg = msg.concat("" +this.getPort());
+        sendUnicast(this.getServer(),msg,true);
+    }
+    
     public void Client()
     {
         Thread unicastListener;
@@ -616,7 +623,7 @@ public class Peer implements Runnable
 
         public void msgEndAuction(String[] msg)
         {
-            Book b = this.getBookById(Integer.parseInt(msg[2]));
+            Book b = this.getBookByName(msg[2]);
             if(b.getOwnerId() == Integer.parseInt(msg[1]))
             {
                 b.endAuction();
@@ -690,9 +697,20 @@ public class Peer implements Runnable
         /**
          *Quando alguem deseja ver todos os livros no servidor, envia tudo
          */
-        public void sendAll()
+        public void sendAll(Peer p)
         {
-        
+            for(Book b:this.auctionbooks){
+                //14 - sendbookA - 14;bookname;value;description;time
+                String msg ="14;";
+                msg = msg.concat(b.getName());
+                msg = msg.concat(";");
+                msg = msg.concat("" +b.getCurrentBid());
+                msg = msg.concat(";");
+                msg = msg.concat(b.getDesc());
+                msg = msg.concat(";");
+                msg = msg.concat(b.getEndTimeAuction().toString());
+                sendUnicast(p,msg,true);
+            }
         }      
         
         /**
@@ -711,11 +729,11 @@ public class Peer implements Runnable
         }
         
         
-        public Book getBookById(int id)
+        public Book getBookByName(String name)
         {
             for(Book b : this.auctionbooks)
             {
-                if(b.getId() == id)
+                if(b.getName() == name)
                     return b;
             }
             return null;
