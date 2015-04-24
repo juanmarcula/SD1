@@ -4,6 +4,7 @@ import Control.Bids;
 
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  *
@@ -98,7 +99,10 @@ public class Book
     /**
      * @return the currentBid
      */
-    public double getCurrentBid() {
+    public double getCurrentBid() 
+    {
+        
+        currentBid = getWinnerValue();
         return currentBid;
     }
 
@@ -108,7 +112,6 @@ public class Book
     public void setCurrentBid(double currentBid) {
         this.currentBid = currentBid;
     }
-    
     
     @Override
     public String toString()
@@ -128,7 +131,8 @@ public class Book
     /**
      * @return the auctionTime in seconds
      */
-    public int getAuctionTime() {
+    public int getAuctionTime() 
+    {
         return auctionTime;
     }
 
@@ -145,6 +149,11 @@ public class Book
      */
     public Date getEndTimeAuction() 
     {
+        Calendar calendar;
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, getAuctionTime());
+
+        setEndTimeAuction(calendar.getTime());
         return endTimeAuction;
     }
 
@@ -165,6 +174,7 @@ public class Book
     }
 
     /**
+     * encerra o leilão do livro
      */
     public void endAuction() 
     {
@@ -187,6 +197,10 @@ public class Book
         return bids;
     }
     
+    /**
+     * retorna a id do cliente do maior lance dados
+     * @return 
+     */
     public int getWinner()
     {
         double max = -1;
@@ -202,6 +216,10 @@ public class Book
         return winner;
     }
     
+    /**
+     * retorna o valor do maior lance
+     * @return 
+     */
     public double getWinnerValue()
     {
         double max = -1;
