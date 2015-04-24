@@ -54,10 +54,18 @@ public class Peer implements Runnable
     private DatagramSocket ucSocket;
     Encryption crypto;
     
+    private ArrayList<Book> following;
+    private ArrayList<Book> myOwn;
+    private ArrayList<Book> serverBooks;
+    
     
     public Peer(String name, String ip, int port, boolean main)
     {
         peers = new ArrayList<>();
+        following = new ArrayList<>();
+        myOwn = new ArrayList<>();
+        serverBooks = new ArrayList<>();
+        
         this.name = name;
         this.setIp(ip);
         this.setPort(port);
@@ -405,6 +413,60 @@ public class Peer implements Runnable
         }
     }
     
+    public void msgServerBooks(String [] msg)
+    {
+        // 14 - sendbookA - 14;bookname;value;description;time
+        for(Book b : this.serverBooks)
+        {
+            if(b.getName().equals(msg[1]))
+            {
+                serverBooks.remove(b);
+            }
+        }
+        Book b = new Book();
+        b.setName(msg[1]);
+        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.setDesc(msg[2]);
+        serverBooks.add(b);
+    }
+    
+    public void msgFollowingBooks(String [] msg)
+    {
+        // 15 - sendbookF - 14;bookname;value;description;time
+        for(Book b : this.following)
+        {
+            if(b.getName().equals(msg[1]))
+            {
+                following.remove(b);
+            }
+        }
+        Book b = new Book();
+        b.setName(msg[1]);
+        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.setDesc(msg[2]);
+        following.add(b);
+    }
+    
+    public void msgMyOwnBooks(String [] msg)
+    {
+        // 15 - sendbookF - 14;bookname;value;description;time
+        for(Book b : this.myOwn)
+        {
+            if(b.getName().equals(msg[1]))
+            {
+                myOwn.remove(b);
+            }
+        }
+        Book b = new Book();
+        b.setName(msg[1]);
+        b.setAuctionTime(Integer.parseInt(msg[4]));
+        b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.setDesc(msg[2]);
+        myOwn.add(b);
+    }
+    
     /**
      * Envia a mensagem msg para o grupo multicast
      * @param msg
@@ -461,6 +523,18 @@ public class Peer implements Runnable
                     break;
                 case 12:
                     server.msgEndAuction(ins); 
+                    break;
+                case 13:
+                    server.sendAll(in.getPort()); 
+                    break;
+                case 14:
+                    msgServerBooks(ins); 
+                    break;
+                case 15:
+                    msgFollowingBooks(ins); 
+                    break;
+                case 16:
+                    msgMyOwnBooks(ins); 
                     break;
                 case 17:
                     this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded()); break;
@@ -806,19 +880,24 @@ public class Peer implements Runnable
         /**
          *Quando alguem deseja ver todos os livros no servidor, envia tudo
          */
-        public void sendAll(Peer p)
+        public void sendAll(int pPort)
         {
-            for(Book b:this.auctionbooks){
-                //14 - sendbookA - 14;bookname;value;description;time
-                String msg ="14;";
-                msg = msg.concat(b.getName());
-                msg = msg.concat(";");
-                msg = msg.concat("" +b.getCurrentBid());
-                msg = msg.concat(";");
-                msg = msg.concat(b.getDesc());
-                msg = msg.concat(";");
-                msg = msg.concat(b.getEndTimeAuction().toString());
-                sendUnicast(p,msg,true);
+            Peer p = getPeerByPort(pPort);
+            if(p!=null)
+            {
+                for(Book b:this.auctionbooks)
+                {
+                    //14 - sendbookA - 14;bookname;value;description;time
+                    String msg ="14;";
+                    msg = msg.concat(b.getName());
+                    msg = msg.concat(";");
+                    msg = msg.concat("" +b.getCurrentBid());
+                    msg = msg.concat(";");
+                    msg = msg.concat(b.getDesc());
+                    msg = msg.concat(";");
+                    msg = msg.concat(b.getEndTimeAuction().toString());
+                    sendUnicast(p,msg,true);
+                }
             }
         }      
         
