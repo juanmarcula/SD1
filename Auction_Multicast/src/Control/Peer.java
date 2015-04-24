@@ -71,7 +71,7 @@ public class Peer implements Runnable
                                     DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                                     mcSocket.receive(messageIn);
                                     onMulticastMessage(messageIn);
-                                    System.out.println("Received:" + new String(messageIn.getData()));
+                                    System.out.println(getName() + " Received:" + new String(messageIn.getData()));
                                 }	
                         }
                         catch (SocketException e)
@@ -130,7 +130,7 @@ public class Peer implements Runnable
     {
         //--------------------------------------------------------------------
         //run comunication
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 2; i++)
         {
             sleep(100);
             //Send hello message
@@ -142,7 +142,7 @@ public class Peer implements Runnable
         if(isHighestPriority())
         {
             this.sendMulticast("1;" + this.getPort() + ";");
-            System.out.println("Disse que é o server");
+            System.out.println(this.getName() + " Disse que é o server");
         }
         //wait for a server to be elected
         int dt = 0;
