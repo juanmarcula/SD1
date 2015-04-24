@@ -433,6 +433,7 @@ public class Peer implements Runnable
         b.setName(msg[1]);
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[3]);
         serverBooks.add(b);
     }
@@ -456,6 +457,7 @@ public class Peer implements Runnable
         System.out.println(">>>>>>>>>>>>>>>>" +Arrays.toString(msg));
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[2]);
         following.add(b);
     }
@@ -478,6 +480,7 @@ public class Peer implements Runnable
         b.setName(msg[1]);
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
+        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[2]);
         myOwn.add(b);
     }
@@ -966,7 +969,7 @@ public class Peer implements Runnable
                     String msg ="14;";
                     msg = msg.concat(b.getName());
                     msg = msg.concat(";");
-                    msg = msg.concat("" + b.getCurrentBid());
+                    msg = msg.concat("" + b.getWinnerValue());
                     msg = msg.concat(";");
                     msg = msg.concat(b.getDesc());
                     msg = msg.concat(";");
@@ -1054,13 +1057,14 @@ public class Peer implements Runnable
            for(Book b : auctionbooks)
                if(b.getName().equals(bookId))
                {
-                   if(b.getCurrentBid() < bid && b.inAuction())
+                   if(b.getWinnerValue()< bid && b.inAuction())
                    {
                        b.setCurrentBid(bid);
                        b.getBids().add(new Bids(clientId, bid));
                        //Envia msg para todos os que estão seguindo esse livro para att os valores
                        sendToAuctioneer(b);
                        sendToFollowers(b);
+                       System.out.println("VAIIIIIIIIIIIIIIIIIIIIIII");
                    }
                }
         }

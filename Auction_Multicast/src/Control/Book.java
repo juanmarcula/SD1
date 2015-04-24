@@ -230,6 +230,7 @@ public class Book
                 max = b.getBid();
             }
         }
+        this.setCurrentBid(max);
         return max;
     }
 

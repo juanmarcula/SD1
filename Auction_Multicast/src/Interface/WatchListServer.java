@@ -33,7 +33,8 @@ public class WatchListServer extends javax.swing.JFrame {
         this.JLServerBooks.removeAll();
         for(Book b:this.in.P.serverBooks){
             DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
-            model.addRow(new Object[]{b.getName(),b.getWinnerValue(),b.getEndTimeAuction().toString(),b.getDesc()});
+            System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+            model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
         }
     }
   /**
