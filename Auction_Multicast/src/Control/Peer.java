@@ -453,6 +453,7 @@ public class Peer implements Runnable
         }
         Book b = new Book();
         b.setName(msg[1]);
+        System.out.println(">>>>>>>>>>>>>>>>" +Arrays.toString(msg));
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
         b.setDesc(msg[2]);
@@ -932,8 +933,8 @@ public class Peer implements Runnable
         {
             Peer p = getPeerByPort(port);
             if(p!=null)
-                sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() 
-                    + ";" + b.getEndTimeAuction(), false);
+                sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                    + ";" + b.getAuctionTime(), false);
         }
         
         /**
@@ -946,8 +947,8 @@ public class Peer implements Runnable
             {
                 Peer p = getPeerByPort(port);
                 if(p!=null)
-                    sendUnicast(p, "16;" + b.getName() + ";"  + b.getWinnerValue() 
-                        + ";" + b.getEndTimeAuction(), false);
+                    sendUnicast(p, "16;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                        + ";" + b.getAuctionTime(), false);
             }
         }
         
