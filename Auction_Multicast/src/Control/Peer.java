@@ -447,9 +447,12 @@ public class Peer implements Runnable
 
     
     
-    public void sendUnicast(Peer p, String msg)
+    public void sendUnicast(Peer p, String msg,boolean encry)
     {
         byte [] m = msg.getBytes();
+        if(encry){
+            m=this.crypto.encryptMsg(m);
+        }
         DatagramPacket out;
         out = new DatagramPacket(m, m.length, p.getIp(), p.getPort());
         try 
@@ -496,8 +499,35 @@ public class Peer implements Runnable
     {
         for(Peer p : peers)
         {
-                sendUnicast(p, "44;");
+                sendUnicast(p, "44;",false);
         }            
+    }
+    
+    public void EndAuction(String bookname)
+    {
+        //12;senderport;bookname;
+        String msg="12;";
+        msg = msg.concat("" +this.getPort());
+        msg = msg.concat(";");
+        msg = msg.concat(bookname);
+        sendUnicast(this.getServer(),msg,true);
+    }
+    
+    public void sendBookToServer(String name,String value,String description,String time)
+    {
+        //11;senderport;bookname;value;description;time
+        String msg="11;";
+        msg = msg.concat("" +this.getPort());
+        msg = msg.concat(";");
+        msg = msg.concat(name);
+        msg = msg.concat(";");
+        msg = msg.concat(value);
+        msg = msg.concat(";");
+        msg = msg.concat(description);
+        msg = msg.concat(";");
+        msg = msg.concat(time);
+        sendUnicast(this.getServer(),msg,true);
+        
     }
     
     public void Client()
@@ -630,7 +660,7 @@ public class Peer implements Runnable
             {
                 if(p.getPort()!=getPort())
                 {
-                    sendUnicast(p, "17;");
+                    sendUnicast(p, "17;",false);
                     p.setPublicKey(msgReceivePk());
                 }
             }

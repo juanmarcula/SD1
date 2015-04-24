@@ -5,8 +5,11 @@
  */
 
 package Interface;
+import Control.Book;
 import Control.Peer;
 import Control.Communication;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,11 +17,15 @@ import Control.Communication;
  */
 public class InterfaceUser extends javax.swing.JFrame {
 
+    Peer P;
     /**
      * Creates new form InterfaceUserNew
      */
-    public InterfaceUser() {
+    ArrayList<Book> MyBooks;
+    public InterfaceUser(Peer p) {
         initComponents();
+        this.P=p;
+        MyBooks = new ArrayList<Book>();
     }
 
     /**
@@ -41,7 +48,7 @@ public class InterfaceUser extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         JTxDescription = new javax.swing.JTextArea();
         LabelInitialPrice = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        jTxInitialPrice = new javax.swing.JTextField();
         LabelTime = new javax.swing.JLabel();
         JTxTime = new javax.swing.JTextField();
         JBAdd = new javax.swing.JButton();
@@ -59,18 +66,35 @@ public class InterfaceUser extends javax.swing.JFrame {
 
         JTMyBooks.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Name", "Price", "Time", "Description"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(JTMyBooks);
 
         JBMyBooks.setText("End the auction");
+        JBMyBooks.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBMyBooksActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout JPMyBooksLayout = new javax.swing.GroupLayout(JPMyBooks);
         JPMyBooks.setLayout(JPMyBooksLayout);
@@ -90,7 +114,7 @@ public class InterfaceUser extends javax.swing.JFrame {
             .addGroup(JPMyBooksLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(JBMyBooks)
                 .addContainerGap())
         );
@@ -110,6 +134,11 @@ public class InterfaceUser extends javax.swing.JFrame {
         LabelTime.setText("Auction Time:");
 
         JBAdd.setText("Add");
+        JBAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBAddActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -131,7 +160,7 @@ public class InterfaceUser extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(LabelInitialPrice)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField3))
+                                .addComponent(jTxInitialPrice))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(LabelTime)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -150,7 +179,7 @@ public class InterfaceUser extends javax.swing.JFrame {
                     .addComponent(LabelName)
                     .addComponent(JTxName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(LabelInitialPrice)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTxInitialPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(LabelDescription)
@@ -183,9 +212,24 @@ public class InterfaceUser extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Name", "Price", "Time", "Description"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(JTFollowing);
 
         LabelPriceFollow.setText("Bid $");
@@ -214,8 +258,8 @@ public class InterfaceUser extends javax.swing.JFrame {
             JPFollowingBooksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(JPFollowingBooksLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(JPFollowingBooksLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(LabelPriceFollow)
                     .addComponent(JTxPriceFollow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -242,11 +286,14 @@ public class InterfaceUser extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(JPMyBooks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(JPFollowingBooks, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(JPMyBooks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(JPFollowingBooks, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -263,6 +310,28 @@ public class InterfaceUser extends javax.swing.JFrame {
         WatchListServer ws =new WatchListServer();
         ws.setVisible(true);
     }//GEN-LAST:event_JBServerActionPerformed
+
+    private void JBAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAddActionPerformed
+       String name = this.JTxName.getText();
+       String description = this.JTxDescription.getText();
+       String time = this.JTxTime.getText();
+       String value = this.jTxInitialPrice.getText();
+       Book B = new Book();
+       B.setName(name);
+       B.setDesc(description);
+       B.setStartingBid(Integer.parseInt(value));
+       B.setAuctionTime(Integer.parseInt(time));
+       this.MyBooks.add(B);
+       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
+       model.addRow(new Object[]{name,value,time,description});
+       P.sendBookToServer(name, value, description, time);
+    }//GEN-LAST:event_JBAddActionPerformed
+
+    private void JBMyBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMyBooksActionPerformed
+        int selecionada = this.JTMyBooks.getSelectedRow();
+        String bookname = (String) this.JTMyBooks.getValueAt(selecionada,0);
+        P.EndAuction(bookname);
+    }//GEN-LAST:event_JBMyBooksActionPerformed
 
     /**
      * @param args the command line arguments
@@ -294,7 +363,7 @@ public class InterfaceUser extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new InterfaceUser().setVisible(true);
+                //new InterfaceUser().setVisible(true);
             }
         });
     }
@@ -321,6 +390,6 @@ public class InterfaceUser extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTxInitialPrice;
     // End of variables declaration//GEN-END:variables
 }
