@@ -236,6 +236,11 @@ public class InterfaceUser extends javax.swing.JFrame {
         LabelPriceFollow.setToolTipText("");
 
         JBBidFollow.setText("Bid");
+        JBBidFollow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JBBidFollowActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout JPFollowingBooksLayout = new javax.swing.GroupLayout(JPFollowingBooks);
         JPFollowingBooks.setLayout(JPFollowingBooksLayout);
@@ -307,7 +312,7 @@ public class InterfaceUser extends javax.swing.JFrame {
 
     private void JBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBServerActionPerformed
         // TODO add your handling code here:
-        WatchListServer ws =new WatchListServer();
+        WatchListServer ws =new WatchListServer(this);
         ws.setVisible(true);
     }//GEN-LAST:event_JBServerActionPerformed
 
@@ -332,6 +337,13 @@ public class InterfaceUser extends javax.swing.JFrame {
         String bookname = (String) this.JTMyBooks.getValueAt(selecionada,0);
         P.EndAuction(bookname);
     }//GEN-LAST:event_JBMyBooksActionPerformed
+
+    private void JBBidFollowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBidFollowActionPerformed
+        int selecionada = this.JTFollowing.getSelectedRow();
+        String bookname = (String) this.JTFollowing.getValueAt(selecionada,0);
+        String value = this.JTxPriceFollow.getText();
+        this.P.sendBidToServer(bookname, value);
+    }//GEN-LAST:event_JBBidFollowActionPerformed
 
     /**
      * @param args the command line arguments
