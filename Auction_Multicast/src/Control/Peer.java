@@ -629,7 +629,10 @@ public class Peer implements Runnable
         public void msgWinner(Book b)
         {
             Peer p = getPeerByPort(b.getWinner());
-            sendMulticast("3;" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
+            if(p != null)
+                sendMulticast("3;" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
+            else
+                sendMulticast("3;nowinner;" + b.getName() + ";" + b.getWinnerValue());
         }
         
         public void msgEndAuction(String[] msg)
@@ -640,6 +643,7 @@ public class Peer implements Runnable
             if(b.getOwnerId() == Integer.parseInt(msg[1]))
             {
                 b.endAuction();
+                msgWinner(b);
                 //send msg para todos os que estão seguindo o livro - acabou
                
             }
@@ -737,7 +741,10 @@ public class Peer implements Runnable
             for(Book b : auctionbooks)
             {
                 if(Calendar.getInstance().after(b.getEndTimeAuction()))
+                {
                     b.endAuction();
+                    msgWinner(b);
+                }
             }
                 
         }
