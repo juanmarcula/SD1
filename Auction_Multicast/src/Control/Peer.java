@@ -628,7 +628,9 @@ public class Peer implements Runnable
 
         public void msgEndAuction(String[] msg)
         {
+            
             Book b = this.getBookByName(msg[2]);
+            
             if(b.getOwnerId() == Integer.parseInt(msg[1]))
             {
                 b.endAuction();
@@ -739,7 +741,7 @@ public class Peer implements Runnable
         {
             for(Book b : this.auctionbooks)
             {
-                if(b.getName() == name)
+                if(b.getName().equals(name))
                     return b;
             }
             return null;
