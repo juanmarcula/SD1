@@ -8,7 +8,11 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -41,7 +45,7 @@ public class Peer implements Runnable
     private final int MULTICAST_PORT = 6789;
     
     private DatagramSocket ucSocket;
-    
+    private DatagramSocket ucSocketSender;
     Encryption crypto;
     
     
@@ -55,7 +59,7 @@ public class Peer implements Runnable
         if(main)
         {
               initializeSockets();
-              Thread multicastListener, unicastListener;
+              Thread multicastListener;
 
 
                 multicastListener = new Thread()
@@ -91,43 +95,14 @@ public class Peer implements Runnable
                 };
                 multicastListener.start();
 
-                unicastListener = new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        try
-                        {
-                            byte[] buffer;
-                            while(true)
-                            {
-                                buffer = new byte[1000];
-                                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-                                ucSocket.receive(request);     
-                            }
-                        }
-                        catch (SocketException e)
-                        {
-                            System.out.println("Socket: " + e.getMessage());
-                        }
-                        catch (IOException e) 
-                        {
-                            System.out.println("IO: " + e.getMessage());
-                        }
-                        finally 
-                        {
-                            if(ucSocket != null) 
-                                ucSocket.close();
-                        }
-                    }
-                };
-                unicastListener.start();
+ 
         }
     }
 
     @Override
     public void run()
     {
+        crypto = new Encryption();
         //--------------------------------------------------------------------
         //run comunication
         for(int i = 0; i < 2; i++)
@@ -143,21 +118,58 @@ public class Peer implements Runnable
         {
             this.sendMulticast("1;" + this.getPort() + ";");
             System.out.println(this.getName() + " Disse que é o server");
+            server = new Server();
         }
+            
         //wait for a server to be elected
         int dt = 0;
-        while(this.server == null && dt < 1000)
+        while(this.getServer() == null && dt < 1000)
         {
             sleep(10);
             dt+=10;
         }
+        if(dt>=1000)
+            System.out.println(this.getName() + " Não achou o server");
+        else
+            System.out.println(this.getName() + " Achou o server");
+        
+        if(getServer() != getPeerByPort(this.port))
+        {
+            System.out.println("Abriu para " + this.getName());
+            this.Client();
+        }
+        //pede chave publica
         
         
+        if(getServer() == getPeerByPort(this.port))
+        {
+            server.msgAskPublicKey();
+            this.Client();
+        }
+        //Send public key
+        //Encryption crypto = new Encryption();
+        //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
         //--------------------------------------------------------------------
         
 
     }
 
+    public void sendPublicKey(Peer p, byte[] m) 
+    {
+        DatagramPacket out;
+        
+        try 
+        {
+            //ucSocketSender = new DatagramSocket(this.getPort());
+            out = new DatagramPacket(m, m.length, p.getIp(), p.getPort());
+            ucSocket.send(out);
+            System.out.println(this.getName() + " mandei pk ");
+        } 
+        catch (IOException e) 
+        {
+
+        }
+    }
     //Peers ops
     public boolean isHighestPriority()
     {
@@ -287,9 +299,6 @@ public class Peer implements Runnable
         this.publicKey = publicKey;
     }
     
-    
-    
-    
     public void initializeSockets()
     {
         try 
@@ -335,12 +344,19 @@ public class Peer implements Runnable
             Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
             peers.add(p);
         }
-        else if(msg[0] == "1")
+        if(Integer.parseInt(msg[0]) == 1)
         {
-            this.getPeerByPort(Integer.parseInt(msg[1])).isServer = true;
+            if(this.getPeerByPort(Integer.parseInt(msg[1])).isServer == false)
+            {
+                this.getPeerByPort(Integer.parseInt(msg[1])).setAsServer();
+                //inicia o timer aqui
+            }
+            else
+            {
+            //seta a variavel em true
+            }
             
-            //this.getPeerByPort(Integer.parseInt(msg[1])).getServer().getPort() == Integer.parseInt(msg[1])
-            //msg de hello do servidor, que faz?
+ 
             
         }
     }
@@ -380,6 +396,10 @@ public class Peer implements Runnable
                 break;
             case 12:
                 //msgEndAuction(ins); 
+                break;
+            case 17:
+                this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded()); break;
+            default:
                 break;
         }
     }
@@ -432,6 +452,48 @@ public class Peer implements Runnable
         return null;
     }
 
+    public void Client()
+    {
+        Thread unicastListener;
+        unicastListener = new Thread()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    byte[] buffer;
+                    while(true)
+                    {
+                        buffer = new byte[1000];
+                        DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                        ucSocket.receive(request);     
+                        System.out.println(getName() + " Received:" + new String(request.getData()));
+                        onUnicastMessage(request);
+                    }
+                }
+                catch (SocketException e)
+                {
+                    System.out.println("Socket: " + e.getMessage());
+                }
+                catch (IOException e) 
+                {
+                    System.out.println("IO: " + e.getMessage());
+                }
+                finally 
+                {
+                    if(ucSocket != null) 
+                    {
+                        System.out.println(this.getName() + " ucSocket closing ");
+                    
+                        ucSocket.close();
+                    }
+                }
+            }
+        };
+        unicastListener.start();
+    }
+    
     
     public class Server
     {
@@ -443,22 +505,8 @@ public class Peer implements Runnable
         public Server()
         {
             auctionbooks = new ArrayList<>();
-            
-            for(Peer p : peers)
-            {
-                msgAskPublicKey(p);                
-            }
-            
-            
         }
 
-        public void msgAskPublicKey(Peer p)
-        {
-            sendUnicast(p, "17;");
-        }
-        
-        
-        
         public void msgBid(String[] msg)
         {
             this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
@@ -484,6 +532,50 @@ public class Peer implements Runnable
             }
         }
 
+        public PublicKey msgReceivePk()
+        {
+            byte[] buffer = new byte[165];
+            DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
+            try 
+            {
+                ucSocket.receive(messageIn);
+                PublicKey pk;            
+
+                try 
+                {
+                    pk = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(messageIn.getData()));
+                    
+                    return pk;
+                } 
+                catch (InvalidKeySpecException e) 
+                {
+                    System.out.println("InvalidKeySpecException: " + e.getMessage());
+                } 
+                catch (NoSuchAlgorithmException e) 
+                {
+                    System.out.println("NoSuchAlgorithmException: " + e.getMessage());
+                }
+            } 
+            catch (IOException e) 
+            {
+                System.out.println("IOException: " + e.getMessage());
+            }
+            return null;
+        }
+
+        public void msgAskPublicKey()
+        {
+            for(Peer p : peers)
+            {
+                if(p.getPort()!=getPort())
+                {
+                    sendUnicast(p, "17;");
+                    p.setPublicKey(msgReceivePk());
+                }
+            }
+            
+        }
+        
         /**
          * Envia uma atualização do livro para os seguidores desse livro
          * @param b
@@ -596,8 +688,8 @@ public class Peer implements Runnable
  * 14 - sendbookA - 14;bookname;value;description;time
  * 15 - sendbookF - 15;bookname;value;description;time
  * 16 - sendbookM - 16;bookname;value;description;time
- * 17 - askPK - 17;serverport;
- * 18 - receivePK - 18;port;key
+ * 17 - sendPKtoServer - 17;port;key
+ 
  **/    
     
 
