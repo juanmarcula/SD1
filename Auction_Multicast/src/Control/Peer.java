@@ -138,17 +138,15 @@ public class Peer implements Runnable
     {
         crypto = new Encryption();
         //--------------------------------------------------------------------
-        //run comunication
-        for(int i = 0; i < 2; i++)
+        //sleeptc(1000);
+        //verifica se é o de maior prioridade, se for, send server
+        while(peers.size()<4)
         {
-            sleeptc(100);
+            sleeptc(10);
             //Send hello message
             this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
                     this.getIp(1) + ";");
-        }
-        //sleeptc(1000);
-        //verifica se é o de maior prioridade, se for, send server
-        while(peers.size()<4);
+        };
         
         this.isServer = false;
         if(isHighestPriority())
@@ -815,6 +813,7 @@ public class Peer implements Runnable
                     public void run()
                     {
                         sendMulticast("1;" + getPort() + ";");
+                        updateList();
                         sleeptc(1000);
                         
                     }
@@ -989,10 +988,14 @@ public class Peer implements Runnable
             
             for(Book b : auctionbooks)
             {
+                
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(b.getEndTimeAuction());
+                //System.out.println("updateList: Now" + Calendar.getInstance().getTime().toString());
+                System.out.println("updateList: End" + cal.getTime().toString());
                 if(Calendar.getInstance().after(cal) && b.inAuction())
                 {
+                    
                     b.endAuction();
                     msgWinner(b);
                 }

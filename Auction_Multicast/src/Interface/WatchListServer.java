@@ -31,10 +31,15 @@ public class WatchListServer extends javax.swing.JFrame {
         this.in.P.RequestAllBooks();
         this.in.P.sleeptc(1000);
         this.JLServerBooks.removeAll();
-        for(Book b:this.in.P.serverBooks){
-            DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
-            System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-            model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+        for(Book b : this.in.P.serverBooks)
+        {
+            if(b.inAuction())
+            {
+                DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
+                System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+                model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+            }
+            }
         }
     }
   /**
@@ -149,9 +154,12 @@ public class WatchListServer extends javax.swing.JFrame {
 
     private void JButtonBidServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JButtonBidServerActionPerformed
         int selecionada = this.JLServerBooks.getSelectedRow();
-        String bookname = (String) this.JLServerBooks.getValueAt(selecionada,0);
-        String value = this.JTPriceServer.getText();
-        this.in.P.sendBidToServer(bookname, value);
+        if(selecionada > -1)
+        {
+            String bookname = (String) this.JLServerBooks.getValueAt(selecionada,0);
+            String value = this.JTPriceServer.getText();
+            this.in.P.sendBidToServer(bookname, value);
+        }
     }//GEN-LAST:event_JButtonBidServerActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

@@ -135,6 +135,19 @@ public class Book
     {
         return auctionTime;
     }
+    
+    /**
+     * @return the auctionTime in seconds
+     */
+    public int getRemainingAuctionTime() 
+    {
+        //arrumar para enviar sempre a diferença de tempo para acabar o leilão
+        this.auctionTime = auctionTime;
+        Calendar calendar;
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, getAuctionTime());
+        return auctionTime;
+    }
 
     /**
      * @param auctionTime the auctionTime to set in seconds
@@ -142,6 +155,11 @@ public class Book
     public void setAuctionTime(int auctionTime) 
     {
         this.auctionTime = auctionTime;
+        Calendar calendar;
+        calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, getAuctionTime());
+
+        setEndTimeAuction(calendar.getTime());
     }
 
     /**
@@ -149,11 +167,7 @@ public class Book
      */
     public Date getEndTimeAuction() 
     {
-        Calendar calendar;
-        calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, getAuctionTime());
 
-        setEndTimeAuction(calendar.getTime());
         return endTimeAuction;
     }
 
