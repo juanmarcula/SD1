@@ -992,7 +992,7 @@ public class Peer implements Runnable
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(b.getEndTimeAuction());
                 //System.out.println("updateList: Now" + Calendar.getInstance().getTime().toString());
-                System.out.println("updateList: End" + cal.getTime().toString());
+                //System.out.println("updateList: End" + cal.getTime().toString());
                 if(Calendar.getInstance().after(cal) && b.inAuction())
                 {
                     
