@@ -39,9 +39,9 @@ public class WatchListServer extends javax.swing.JFrame {
                 System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
                 model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
             }
-            }
         }
     }
+    
   /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
