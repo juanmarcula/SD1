@@ -18,14 +18,18 @@ import javax.swing.table.DefaultTableModel;
 public class InterfaceUser extends javax.swing.JFrame {
 
     Peer P;
+    public WatchListServer ws;
+    DefaultTableModel modelFollow;
     /**
      * Creates new form InterfaceUserNew
      */
     ArrayList<Book> MyBooks;
     public InterfaceUser(Peer p) {
         initComponents();
+        modelFollow = (DefaultTableModel) this.JTFollowing.getModel();
         this.P=p;
         MyBooks = new ArrayList<Book>();
+        ws =new WatchListServer(this);
     }
 
     /**
@@ -309,7 +313,7 @@ public class InterfaceUser extends javax.swing.JFrame {
 
     private void JBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBServerActionPerformed
         // TODO add your handling code here:
-        WatchListServer ws =new WatchListServer(this);
+        ws.LimparAndRequest();
         ws.setVisible(true);
     }//GEN-LAST:event_JBServerActionPerformed
 
@@ -342,6 +346,20 @@ public class InterfaceUser extends javax.swing.JFrame {
         this.P.sendBidToServer(bookname, value);
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
+    public void AdicionaFollowing(Book b)
+    {
+      
+      System.out.println(">>>>>>>>>>>ADD follow");
+      //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+      modelFollow.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+    }
+    
+    public void AdicionaMyBooks(Book b)
+    {
+      DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
+      //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+      model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+    }
     /**
      * @param args the command line arguments
      */

@@ -1,5 +1,6 @@
 package Control;
 
+import Interface.InterfaceUser;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
@@ -58,10 +59,11 @@ public class Peer implements Runnable
     public ArrayList<Book> following;
     public ArrayList<Book> myOwn;
     public ArrayList<Book> serverBooks;
-    
+    Interface.InterfaceUser in;
     
     public Peer(String name, String ip, int port, boolean main)
     {
+        
         peers = new ArrayList<>();
         following = new ArrayList<>();
         myOwn = new ArrayList<>();
@@ -184,6 +186,8 @@ public class Peer implements Runnable
             server.msgAskPublicKey();
             this.Client();
         }
+        in = new InterfaceUser(this);
+        in.setVisible(true);
         getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
         getPeerByPort(this.port).serverHasPk = true;
         //Send public key
@@ -420,13 +424,13 @@ public class Peer implements Runnable
     {
         // 14 - sendbookA - 14;bookname;value;description;time
         
-        for(Book b : serverBooks)
+        /*for(Book b : serverBooks)
         {
             if(b.getName().equals(msg[1]))
             {
                 serverBooks.remove(b);
             }
-        }
+        }*/
         Book b = new Book();
         b.setName(msg[1]);
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
@@ -434,6 +438,7 @@ public class Peer implements Runnable
         b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[3]);
         serverBooks.add(b);
+        in.ws.AdicionaLivroServer(b);
     }
     
     /**
@@ -443,13 +448,13 @@ public class Peer implements Runnable
     public void msgFollowingBooks(String [] msg)
     {
         // 15 - sendbookF - 14;bookname;value;description;time
-        for(Book b : this.following)
+        /*for(Book b : this.following)
         {
             if(b.getName().equals(msg[1]))
             {
                 following.remove(b);
             }
-        }
+        }*/
         Book b = new Book();
         b.setName(msg[1]);
         System.out.println(">>>>>>>>>>>>>>>>" +Arrays.toString(msg));
@@ -458,6 +463,7 @@ public class Peer implements Runnable
         b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[2]);
         following.add(b);
+        in.AdicionaFollowing(b);
     }
     
     /**
@@ -481,6 +487,7 @@ public class Peer implements Runnable
         b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
         b.setDesc(msg[2]);
         myOwn.add(b);
+        in.AdicionaMyBooks(b);
     }
     
     /**
@@ -611,6 +618,7 @@ public class Peer implements Runnable
     public void sendUnicast(Peer p, String msg,boolean encry)
     {
         byte [] m = msg.getBytes();
+        System.out.println(Arrays.toString(m));
         if(encry){
             m=this.crypto.encryptMsg(m);
         }
@@ -715,7 +723,7 @@ public class Peer implements Runnable
         msg = msg.concat(";");
         msg = msg.concat(time);
         sendUnicast(this.getServer(),msg,true);
-        
+             
     }
     
     /**
@@ -933,10 +941,14 @@ public class Peer implements Runnable
          */
         public void sendToFollowers(Book b)
         {
-            Peer p = getPeerByPort(port);
-            if(p!=null)
-                sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
-                    + ";" + b.getAuctionTime(), false);
+            for(Bids bid : b.getBids())
+            {
+                Peer p = getPeerByPort(bid.getClientId());
+            
+                if(p!=null)
+                    sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                        + ";" + b.getAuctionTime(), false);
+            }
         }
         
         /**

@@ -23,7 +23,22 @@ public class WatchListServer extends javax.swing.JFrame {
         this.in=in;
         
         initComponents();
-        this.prencheTable();
+        
+        //this.prencheTable();
+    }
+    
+    public void LimparAndRequest(){
+        this.in.P.RequestAllBooks();
+        this.in.P.sleeptc(1000);
+        this.JLServerBooks.removeAll();
+    }
+    
+    public void AdicionaLivroServer(Book b){
+        
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
+        System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+        model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
     }
 
     public void prencheTable()
@@ -163,6 +178,7 @@ public class WatchListServer extends javax.swing.JFrame {
     }//GEN-LAST:event_JButtonBidServerActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.LimparAndRequest();
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 

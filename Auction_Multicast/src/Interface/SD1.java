@@ -27,8 +27,6 @@ public class SD1 {
             Peer p;
             p = new Peer(names[i], "localhost", port, true);       
             Thread t = new Thread((Runnable) p);
-            Interface.InterfaceUser a = new InterfaceUser(p);
-            a.setVisible(true);
             t.start();    
             port++;
         }
