@@ -461,7 +461,7 @@ public class Peer implements Runnable
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
         b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
-        b.setDesc(msg[2]);
+        b.setDesc(msg[3]);
         following.add(b);
         in.AdicionaFollowing(b);
     }
@@ -473,19 +473,19 @@ public class Peer implements Runnable
     public void msgMyOwnBooks(String [] msg)
     {
         // 15 - sendbookF - 14;bookname;value;description;time
-        for(Book b : this.myOwn)
+        /*for(Book b : this.myOwn)
         {
             if(b.getName().equals(msg[1]))
             {
                 myOwn.remove(b);
             }
-        }
+        }*/
         Book b = new Book();
         b.setName(msg[1]);
         b.setAuctionTime(Integer.parseInt(msg[4].trim()));
         b.setCurrentBid(Double.parseDouble(msg[2]));
         b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
-        b.setDesc(msg[2]);
+        b.setDesc(msg[3]);
         myOwn.add(b);
         in.AdicionaMyBooks(b);
     }
@@ -957,13 +957,13 @@ public class Peer implements Runnable
          */
         public void sendToAuctioneer(Book b)
         {
-            for(int port : b.getFollowing())
-            {
-                Peer p = getPeerByPort(port);
+            //for(int port : b.getFollowing())
+            //{
+                Peer p = getPeerByPort(b.getOwnerId());
                 if(p!=null)
                     sendUnicast(p, "16;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
                         + ";" + b.getAuctionTime(), false);
-            }
+            //}
         }
         
         /**

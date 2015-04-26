@@ -23,18 +23,24 @@ public class WatchListServer extends javax.swing.JFrame {
         this.in=in;
         
         initComponents();
-        
         //this.prencheTable();
     }
     
     public void LimparAndRequest(){
+        this.JLServerBooks.removeAll();
         this.in.P.RequestAllBooks();
         this.in.P.sleeptc(1000);
-        this.JLServerBooks.removeAll();
     }
     
     public void AdicionaLivroServer(Book b){
-        
+        int rows = this.JLServerBooks.getRowCount();
+        for(int i=0;i<rows;i++){
+          String bookname = (String) this.JLServerBooks.getValueAt(i,0);
+          if(bookname.equals(b.getName())){
+              DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
+              model.removeRow(i);
+          }
+        }
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
         System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
@@ -175,6 +181,8 @@ public class WatchListServer extends javax.swing.JFrame {
             String value = this.JTPriceServer.getText();
             this.in.P.sendBidToServer(bookname, value);
         }
+        this.JTPriceServer.setText(" ");
+        this.setVisible(false);
     }//GEN-LAST:event_JButtonBidServerActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

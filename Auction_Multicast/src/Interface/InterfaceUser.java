@@ -330,6 +330,10 @@ public class InterfaceUser extends javax.swing.JFrame {
        this.MyBooks.add(B);
        DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
        model.addRow(new Object[]{name,value,time,description});
+       this.JTxName.setText(" ");
+       this.JTxDescription.setText(" ");
+       this.JTxTime.setText(" ");
+       this.jTxInitialPrice.setText(" ");
        P.sendBookToServer(name, value, description, time);
     }//GEN-LAST:event_JBAddActionPerformed
 
@@ -343,13 +347,20 @@ public class InterfaceUser extends javax.swing.JFrame {
         int selecionada = this.JTFollowing.getSelectedRow();
         String bookname = (String) this.JTFollowing.getValueAt(selecionada,0);
         String value = this.JTxPriceFollow.getText();
+        this.JTxPriceFollow.setText(" ");
         this.P.sendBidToServer(bookname, value);
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
     public void AdicionaFollowing(Book b)
     {
-      
-      System.out.println(">>>>>>>>>>>ADD follow");
+      int rows = this.JTFollowing.getRowCount();
+      for(int i=0;i<rows;i++){
+          String bookname = (String) this.JTFollowing.getValueAt(i,0);
+          if(bookname.equals(b.getName())){
+              this.modelFollow.removeRow(i);
+          }
+       }
+      //System.out.println(">>>>>>>>>>>ADD follow");
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
       modelFollow.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
     }
@@ -357,6 +368,13 @@ public class InterfaceUser extends javax.swing.JFrame {
     public void AdicionaMyBooks(Book b)
     {
       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
+      int rows = this.JTMyBooks.getRowCount();
+      for(int i=0;i<rows;i++){
+          String bookname = (String) this.JTMyBooks.getValueAt(i,0);
+          if(bookname.equals(b.getName())){
+              model.removeRow(i);
+          }
+       }
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
       model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
     }
