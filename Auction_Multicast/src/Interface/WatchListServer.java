@@ -41,7 +41,7 @@ public class WatchListServer extends javax.swing.JFrame {
               model.removeRow(i);
           }
         }
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        
         DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
         System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
         String winner;

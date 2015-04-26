@@ -143,8 +143,6 @@ public class Peer implements Runnable
         {
             crypto = new Encryption();
             //--------------------------------------------------------------------
-            //sleeptc(1000);
-            //verifica se é o de maior prioridade, se for, send server
             while(peers.size()<4)
             {
                 sleeptc(10);
@@ -220,7 +218,7 @@ public class Peer implements Runnable
             //ucSocketSender = new DatagramSocket(this.getPort());
             out = new DatagramPacket(m, m.length, p.getIp(), p.getPort());
             ucSocket.send(out);
-            System.out.println(this.getName() + " mandei pk ");
+            System.out.println(this.getName() + " Enviando PublicKey");
             this.serverHasPk = true;
         } 
         catch (IOException e) 
@@ -542,67 +540,37 @@ public class Peer implements Runnable
     public void onUnicastMessage(DatagramPacket in)
     {
         String[] ins = null;
-/*        if(this.getServer().getPort() != && in.getPort()!=this.getServer().getPort())
-        {
-            ins = new String(in.getData()).split(";");
-            if(Integer.parseInt(ins[0]) == 44)
-            {
-                //deu merda no servidor, me avisaram
-                return;
-            }
-            
-        }*/
+
         Peer p = getPeerByPort(in.getPort());
         System.out.println("Sou servidor? " + getPeerByPort(port).isServer);
         
- /*       if(p != null && p.isServer)// && p.getPort()!=getPeerByPort(port))
-            ins = new String(in.getData()).split(";");
-        else if(getPeerByPort(port).isServer != true && !p.serverHasPk)
-            ins = new String(in.getData()).split(";");
-        else
-        {
-            p = getPeerByPort(in.getPort());
-            ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
-        }
-   */     
         if(p!= null && p.isServer)
         {
             try
             {
                 String a;
-                System.out.println("B-");
                 p = getPeerByPort(in.getPort());
                 if(p.getPublicKey()!=null)
                     ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
                 else
                      a = ins[5];
-                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
+                System.out.println(this.getName() + " " + Arrays.toString(ins));
             }
             catch(Exception e)//finally//(NumberFormatException e)
-            {
-                System.out.println("A-");
+            {;
                 ins = new String(in.getData()).split(";");
                 String a  = ins[0];
-                System.out.println("AonUM " + this.getName() + " " + Arrays.toString(ins));
-            }/*
-            catch(Exception e)
-            {
-                System.out.println("B");
-                p = getPeerByPort(in.getPort());
-                ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
-                System.out.println("BonUM " + this.getName() + " " + Arrays.toString(ins));
-            }*/
+                System.out.println(this.getName() + " " + Arrays.toString(ins));
+            }
         }
         else
         {
-            System.out.println("C");
             p = getPeerByPort(in.getPort());
             ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
-            System.out.println("ConUM " + this.getName() + " " + Arrays.toString(ins));
+            System.out.println(this.getName() + " " + Arrays.toString(ins));
         }
         if(ins.length>0)
         {
-            System.out.println("onUM" + this.getName() + " " + Arrays.toString(ins));
             switch(Integer.parseInt(ins[0]))
             {
                 case 10:
@@ -1007,19 +975,22 @@ public class Peer implements Runnable
                 for(Book b:this.auctionbooks)
                 {
                     // 14 - sendbookA - 14;bookid;bookName;WinnerId;value;description;time
-                    String msg ="14;";
-                    msg = msg.concat("" + b.getId());
-                    msg = msg.concat(";");
-                    msg = msg.concat(b.getName());
-                    msg = msg.concat(";");
-                    msg = msg.concat("" +b.getWinner());
-                    msg = msg.concat(";");
-                    msg = msg.concat("" + b.getWinnerValue());
-                    msg = msg.concat(";");
-                    msg = msg.concat(b.getDesc());
-                    msg = msg.concat(";");
-                    msg = msg.concat("" + b.getAuctionTime());
-                    sendUnicast(p, msg, false);
+                    if(b.inAuction())
+                    {
+                        String msg ="14;";
+                        msg = msg.concat("" + b.getId());
+                        msg = msg.concat(";");
+                        msg = msg.concat(b.getName());
+                        msg = msg.concat(";");
+                        msg = msg.concat("" +b.getWinner());
+                        msg = msg.concat(";");
+                        msg = msg.concat("" + b.getWinnerValue());
+                        msg = msg.concat(";");
+                        msg = msg.concat(b.getDesc());
+                        msg = msg.concat(";");
+                        msg = msg.concat("" + b.getAuctionTime());
+                        sendUnicast(p, msg, false);
+                    }
                 }
             }
         }      
