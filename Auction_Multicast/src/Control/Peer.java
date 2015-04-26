@@ -433,9 +433,16 @@ public class Peer implements Runnable
     
     public void msgEndAuction(String[] msg)
     {
-        //fimdeleilão - 3;idvencedor;bookid;valor
-        
-        
+            //3;idVencedor;nomevencedor;bookid;valor
+        if(Integer.parseInt(msg[1].trim()) == this.port)
+        {}    //ganhei
+        Book b = getBookById(Integer.parseInt(msg[3].trim()), myOwn);
+        if(b!=null)
+        {}
+        b = getBookById(Integer.parseInt(msg[3].trim()), following);
+        if(b!=null)
+        {}
+
     }
     
     /**
@@ -853,10 +860,10 @@ public class Peer implements Runnable
          */
         public void msgWinner(Book b)
         {
-            //3;idVencedor;nomevencedor;bookname;valor
+            //3;idVencedor;nomevencedor;bookid;valor
             Peer p = getPeerByPort(b.getWinner());
             if(p != null)
-                sendMulticast("3;" + b.getWinner() + ";" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
+                sendMulticast("3;" + b.getWinner() + ";" + p.getName() + ";" + b.getId()+ ";" + b.getWinnerValue());
             else
                 sendMulticast("3;nowinner;-1;" + b.getName() + ";" + b.getWinnerValue());
         }
