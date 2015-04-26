@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
  *
@@ -138,64 +139,75 @@ public class Peer implements Runnable
     @Override
     public void run()
     {
-        crypto = new Encryption();
-        //--------------------------------------------------------------------
-        //sleeptc(1000);
-        //verifica se é o de maior prioridade, se for, send server
-        while(peers.size()<4)
+        while(true)
         {
-            sleeptc(10);
-            //Send hello message
-            this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
-                    this.getIp(1) + ";");
-        };
-        
-        this.isServer = false;
-        if(isHighestPriority())
-        {
-            this.sendMulticast("1;" + this.getPort() + ";");
-            System.out.println(this.getName() + " Disse que é o server");
-            server = new Server();
-            this.isServer = true;
-        }
-        else
-            sleeptc(100);
+            crypto = new Encryption();
+            //--------------------------------------------------------------------
+            //sleeptc(1000);
+            //verifica se é o de maior prioridade, se for, send server
+            while(peers.size()<4)
+            {
+                sleeptc(10);
+                //Send hello message
+                this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
+                        this.getIp(1) + ";");
+            };
+
+            this.isServer = false;
+            if(isHighestPriority())
+            {
+                this.sendMulticast("1;" + this.getPort() + ";");
+                System.out.println(this.getName() + " Disse que é o server");
+                server = new Server();
+                this.isServer = true;
+            }
+            else
+                sleeptc(100);
+
+            //wait for a server to be elected
+            int dt = 0;
+            while(this.getServer() == null && dt < 1000)
+            {
+                sleeptc(10);
+                dt+=1;
+            }
+            if(dt>=1000)
+                System.out.println(this.getName() + " Não achou o server");
+            else
+                System.out.println(this.getName() + " Achou o server");
+
+            if(getServer() != getPeerByPort(this.port))
+            {
+                System.out.println("Abriu para " + this.getName());
+                this.Client();
+            }
+            //pede chave publica
+
+
+            if(getServer() == getPeerByPort(this.port))
+            {
+                server.msgAskPublicKey();
+                this.Client();
+            }
+
+            in = new InterfaceUser(this,this.isServer,this.getName());
+            in.setVisible(true);
+            getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
+            getPeerByPort(this.port).serverHasPk = true;
+            //Send public key
+            //Encryption crypto = new Encryption();
+            //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
+            //--------------------------------------------------------------------
+
+            while(!ServidorDown);
+
+            peers = new ArrayList<>();
+            following = new ArrayList<>();
+            myOwn = new ArrayList<>();
+            serverBooks = new ArrayList<>();
+            System.out.println("###### RESTARTING -SEVER DOWN ######");
             
-        //wait for a server to be elected
-        int dt = 0;
-        while(this.getServer() == null && dt < 1000)
-        {
-            sleeptc(10);
-            dt+=1;
         }
-        if(dt>=1000)
-            System.out.println(this.getName() + " Não achou o server");
-        else
-            System.out.println(this.getName() + " Achou o server");
-        
-        if(getServer() != getPeerByPort(this.port))
-        {
-            System.out.println("Abriu para " + this.getName());
-            this.Client();
-        }
-        //pede chave publica
-        
-        
-        if(getServer() == getPeerByPort(this.port))
-        {
-            server.msgAskPublicKey();
-            this.Client();
-        }
-        
-        in = new InterfaceUser(this,this.isServer,this.getName());
-        in.setVisible(true);
-        getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
-        getPeerByPort(this.port).serverHasPk = true;
-        //Send public key
-        //Encryption crypto = new Encryption();
-        //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
-        //--------------------------------------------------------------------
-        
 
     }
 
