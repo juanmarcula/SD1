@@ -186,7 +186,8 @@ public class Peer implements Runnable
             server.msgAskPublicKey();
             this.Client();
         }
-        in = new InterfaceUser(this);
+        
+        in = new InterfaceUser(this,this.isServer,this.getName());
         in.setVisible(true);
         getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
         getPeerByPort(this.port).serverHasPk = true;

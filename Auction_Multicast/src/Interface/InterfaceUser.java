@@ -24,8 +24,16 @@ public class InterfaceUser extends javax.swing.JFrame {
      * Creates new form InterfaceUserNew
      */
     ArrayList<Book> MyBooks;
-    public InterfaceUser(Peer p) {
+    public InterfaceUser(Peer p,boolean server,String name) {
         initComponents();
+        if(server){
+            String titulo="Server: ";
+            titulo+=name;
+            this.setTitle(titulo);
+        }
+        else{
+            this.setTitle(name);
+        }
         modelFollow = (DefaultTableModel) this.JTFollowing.getModel();
         this.P=p;
         MyBooks = new ArrayList<Book>();
@@ -73,14 +81,14 @@ public class InterfaceUser extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Name", "Price", "Time", "Description"
+                "Name", "Price", "Time", "Description", "Winner Bid Owner"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -213,14 +221,14 @@ public class InterfaceUser extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Name", "Price", "Time", "Description"
+                "Name", "Price", "Time", "Description", "Winner Bid Owner"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, true, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -362,7 +370,7 @@ public class InterfaceUser extends javax.swing.JFrame {
        }
       //System.out.println(">>>>>>>>>>>ADD follow");
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-      modelFollow.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+      modelFollow.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),P.getPeerByPort(b.getWinner())});
     }
     
     public void AdicionaMyBooks(Book b)
