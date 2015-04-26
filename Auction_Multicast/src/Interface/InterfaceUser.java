@@ -81,14 +81,14 @@ public class InterfaceUser extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Name", "Price", "Time", "Description", "Winner Bid Owner"
+                "Id", "Name", "Price", "Time", "Description", "Winner Bid Owner"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, true
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -221,14 +221,14 @@ public class InterfaceUser extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Name", "Price", "Time", "Description", "Winner Bid Owner"
+                "Id", "Name", "Price", "Time", "Description", "Winner Bid Owner"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -335,9 +335,10 @@ public class InterfaceUser extends javax.swing.JFrame {
        B.setDesc(description);
        B.setStartingBid(Double.parseDouble(value));
        B.setAuctionTime(Integer.parseInt(time));
+       Integer id=0;
        this.MyBooks.add(B);
-       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
-       model.addRow(new Object[]{name,value,time,description});
+       //DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
+       //model.addRow(new Object[]{id,name,value,time,description});
        this.JTxName.setText(" ");
        this.JTxDescription.setText(" ");
        this.JTxTime.setText(" ");
@@ -347,30 +348,30 @@ public class InterfaceUser extends javax.swing.JFrame {
 
     private void JBMyBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMyBooksActionPerformed
         int selecionada = this.JTMyBooks.getSelectedRow();
-        String bookname = (String) this.JTMyBooks.getValueAt(selecionada,0);
-        P.EndAuction(bookname);
+        Integer bookid = (Integer) this.JTMyBooks.getValueAt(selecionada,0);
+        P.EndAuction(bookid);
     }//GEN-LAST:event_JBMyBooksActionPerformed
 
     private void JBBidFollowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBidFollowActionPerformed
         int selecionada = this.JTFollowing.getSelectedRow();
-        String bookname = (String) this.JTFollowing.getValueAt(selecionada,0);
+        Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
         String value = this.JTxPriceFollow.getText();
         this.JTxPriceFollow.setText(" ");
-        this.P.sendBidToServer(bookname, value);
+        this.P.sendBidToServer(bookid, value);
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
     public void AdicionaFollowing(Book b)
     {
       int rows = this.JTFollowing.getRowCount();
       for(int i=0;i<rows;i++){
-          String bookname = (String) this.JTFollowing.getValueAt(i,0);
-          if(bookname.equals(b.getName())){
+          Integer bookid = (Integer) this.JTFollowing.getValueAt(i,0);
+          if(bookid==b.getId()){
               this.modelFollow.removeRow(i);
           }
        }
       //System.out.println(">>>>>>>>>>>ADD follow");
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-      modelFollow.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),P.getPeerByPort(b.getWinner())});
+      modelFollow.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),P.getPeerByPort(b.getWinner()).getName()});
     }
     
     public void AdicionaMyBooks(Book b)
@@ -378,13 +379,20 @@ public class InterfaceUser extends javax.swing.JFrame {
       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
       int rows = this.JTMyBooks.getRowCount();
       for(int i=0;i<rows;i++){
-          String bookname = (String) this.JTMyBooks.getValueAt(i,0);
-          if(bookname.equals(b.getName())){
+          Integer bookid = (Integer) this.JTMyBooks.getValueAt(i,0);
+          if(bookid==b.getId()){
               model.removeRow(i);
           }
        }
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-      model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+      String winner;
+      if(b.getWinner()==-1){
+          winner="";
+      }
+      else{
+         winner=P.getPeerByPort(b.getWinner()).getName();
+      }
+      model.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),winner});
     }
     /**
      * @param args the command line arguments

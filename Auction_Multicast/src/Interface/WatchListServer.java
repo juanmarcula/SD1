@@ -35,8 +35,8 @@ public class WatchListServer extends javax.swing.JFrame {
     public void AdicionaLivroServer(Book b){
         int rows = this.JLServerBooks.getRowCount();
         for(int i=0;i<rows;i++){
-          String bookname = (String) this.JLServerBooks.getValueAt(i,0);
-          if(bookname.equals(b.getName())){
+          Integer bookid = (Integer) this.JLServerBooks.getValueAt(i,0);
+          if(bookid==b.getId()){
               DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
               model.removeRow(i);
           }
@@ -44,7 +44,14 @@ public class WatchListServer extends javax.swing.JFrame {
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
         System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-        model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+        String winner;
+                  if(b.getWinner()==-1){
+                      winner="";
+                  }
+                  else{
+                     winner=this.in.P.getPeerByPort(b.getWinner()).getName();
+                  }
+        model.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),winner});
     }
 
     public void prencheTable()
@@ -56,9 +63,16 @@ public class WatchListServer extends javax.swing.JFrame {
         {
             if(b.inAuction())
             {
+                String winner;
+                  if(b.getWinner()==-1){
+                      winner="";
+                  }
+                  else{
+                     winner=this.in.P.getPeerByPort(b.getWinner()).getName();
+                  }
                 DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
                 System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-                model.addRow(new Object[]{b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
+                model.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
             }
         }
     }
@@ -89,14 +103,14 @@ public class WatchListServer extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Name", "Price", "Time", "Description", "Winner Bid Owner"
+                "Id", "Name", "Price", "Time", "Description", "Winner Bid Owner"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -107,6 +121,7 @@ public class WatchListServer extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        JLServerBooks.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(JLServerBooks);
 
         LabelPriceServer.setText("Bid $");
@@ -184,9 +199,11 @@ public class WatchListServer extends javax.swing.JFrame {
         int selecionada = this.JLServerBooks.getSelectedRow();
         if(selecionada > -1)
         {
-            String bookname = (String) this.JLServerBooks.getValueAt(selecionada,0);
+            
+            Integer bookid = (Integer) this.JLServerBooks.getValueAt(selecionada,0);
+            System.out.println(bookid);
             String value = this.JTPriceServer.getText();
-            this.in.P.sendBidToServer(bookname, value);
+            this.in.P.sendBidToServer(bookid, value);
         }
         this.JTPriceServer.setText(" ");
         this.setVisible(false);

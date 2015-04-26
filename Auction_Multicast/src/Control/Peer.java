@@ -963,7 +963,7 @@ public class Peer implements Runnable
                 Peer p = getPeerByPort(bid.getClientId());
             
                 if(p!=null)
-                    sendUnicast(p, "15;" + b.getId() + ";"  + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                    sendUnicast(p, "15;" + b.getId() + ";"  + b.getName() +";" +b.getWinner()  +";"  + b.getWinnerValue() +";" +b.getDesc()
                         + ";" + b.getAuctionTime(), false);
             }
         }
@@ -979,7 +979,7 @@ public class Peer implements Runnable
             //{
                 Peer p = getPeerByPort(b.getOwnerId());
                 if(p!=null)
-                    sendUnicast(p, "16;" + b.getId() + ";" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                    sendUnicast(p, "16;" + b.getId() + ";" + b.getName()+";" +b.getWinner() + ";"  + b.getWinnerValue() +";" +b.getDesc()
                         + ";" + b.getAuctionTime(), false);
             //}
         }
@@ -994,10 +994,13 @@ public class Peer implements Runnable
             {
                 for(Book b:this.auctionbooks)
                 {
-                    //14 - sendbookA - 14;bookid;bookname;value;description;time
+                    // 14 - sendbookA - 14;bookid;bookName;WinnerId;value;description;time
                     String msg ="14;";
                     msg = msg.concat("" + b.getId());
+                    msg = msg.concat(";");
                     msg = msg.concat(b.getName());
+                    msg = msg.concat(";");
+                    msg = msg.concat("" +b.getWinner());
                     msg = msg.concat(";");
                     msg = msg.concat("" + b.getWinnerValue());
                     msg = msg.concat(";");
@@ -1091,7 +1094,7 @@ public class Peer implements Runnable
             b.setEndTimeAuction(calendar.getTime());
 
             auctionbooks.add(b);
-
+            this.sendToAuctioneer(b);
             System.out.println(b.toString(1));
         }
 
