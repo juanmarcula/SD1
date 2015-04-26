@@ -142,11 +142,12 @@ public class Book
     public int getRemainingAuctionTime() 
     {
         //arrumar para enviar sempre a diferença de tempo para acabar o leilão
-        this.auctionTime = auctionTime;
+        //this.auctionTime = auctionTime;
         Calendar calendar;
         calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, getAuctionTime());
-        return auctionTime;
+        long t = (this.endTimeAuction.getTime() - calendar.getTime().getTime())/1000;
+        //calendar.add(Calendar.SECOND, getAuctionTime());
+        return (int)t;
     }
 
     /**

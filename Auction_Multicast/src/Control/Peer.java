@@ -944,7 +944,7 @@ public class Peer implements Runnable
             
                 if(p!=null)
                     sendUnicast(p, "15;" + b.getId() + ";"  + b.getName() +";" +b.getWinner()  +";"  + b.getWinnerValue() +";" +b.getDesc()
-                        + ";" + b.getAuctionTime(), false);
+                        + ";" + b.getRemainingAuctionTime(), false);
             }
         }
         
@@ -960,7 +960,7 @@ public class Peer implements Runnable
                 Peer p = getPeerByPort(b.getOwnerId());
                 if(p!=null)
                     sendUnicast(p, "16;" + b.getId() + ";" + b.getName()+";" +b.getWinner() + ";"  + b.getWinnerValue() +";" +b.getDesc()
-                        + ";" + b.getAuctionTime(), false);
+                        + ";" + b.getRemainingAuctionTime(), false);
             //}
         }
         
@@ -988,7 +988,7 @@ public class Peer implements Runnable
                         msg = msg.concat(";");
                         msg = msg.concat(b.getDesc());
                         msg = msg.concat(";");
-                        msg = msg.concat("" + b.getAuctionTime());
+                        msg = msg.concat("" + b.getRemainingAuctionTime());
                         sendUnicast(p, msg, false);
                     }
                 }
