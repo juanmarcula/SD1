@@ -275,18 +275,20 @@ public class Peer implements Runnable
     }
 
     /**
-     * @return the timeOutCounter
-     */
-    public int getTimeOutCounter() {
-        return timeOutCounter;
-    }
-
-    /**
-     * @param timeOutCounter the timeOutCounter to set
-     */
-    public void setTimeOutCounter(int timeOutCounter) {
-        this.timeOutCounter = timeOutCounter;
-    }
+    * retorna um livro de uma base de livros dado a sua id
+    * @param bid
+    * @param base
+    * @return
+    */
+    public Book getBookById(int bid, ArrayList<Book> base)
+    {
+       for(Book b : base)
+       {
+           if(b.getId() == bid)
+               return b;
+       }
+       return null;
+   }
 
     /**
      * @return the ip
@@ -384,6 +386,8 @@ public class Peer implements Runnable
                 msgHelloEvent(ins); break;
             case 1:
                 msgHelloEvent(ins); break;
+            case 3: 
+                msgEndAuction(ins); break;
         }
         
     }
@@ -417,13 +421,20 @@ public class Peer implements Runnable
         }
     }
     
+    public void msgEndAuction(String[] msg)
+    {
+        //fimdeleilão - 3;idvencedor;bookid;valor
+        
+        
+    }
+    
     /**
      * trata o recebimento de todos os livros que estão no servidor
      * @param msg 
      */
     public void msgServerBooks(String [] msg)
     {
-        // 14 - sendbookA - 14;bookname;value;description;time
+        // 14 - sendbookA - 14;bookid;bookName;WinnerId;value;description;time
         
         /*for(Book b : serverBooks)
         {
@@ -433,11 +444,12 @@ public class Peer implements Runnable
             }
         }*/
         Book b = new Book();
-        b.setName(msg[1]);
-        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
-        b.setCurrentBid(Double.parseDouble(msg[2]));
-        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
-        b.setDesc(msg[3]);
+        b.setId(Integer.parseInt(msg[1].trim()));
+        b.setName(msg[2]);
+        b.setAuctionTime(Integer.parseInt(msg[6].trim()));
+        b.setCurrentBid(Double.parseDouble(msg[4]));
+        b.getBids().add(new Bids(Integer.parseInt(msg[3].trim()),Double.parseDouble(msg[4])));
+        b.setDesc(msg[5]);
         serverBooks.add(b);
         in.ws.AdicionaLivroServer(b);
     }
@@ -448,7 +460,7 @@ public class Peer implements Runnable
      */
     public void msgFollowingBooks(String [] msg)
     {
-        // 15 - sendbookF - 14;bookname;value;description;time
+        // 15 - sendbookF - 14;bookid;bookname;winnerId;value;description;time
         /*for(Book b : this.following)
         {
             if(b.getName().equals(msg[1]))
@@ -457,12 +469,12 @@ public class Peer implements Runnable
             }
         }*/
         Book b = new Book();
-        b.setName(msg[1]);
-        System.out.println(">>>>>>>>>>>>>>>>" +Arrays.toString(msg));
-        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
-        b.setCurrentBid(Double.parseDouble(msg[2]));
-        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
-        b.setDesc(msg[3]);
+        b.setId(Integer.parseInt(msg[1].trim()));
+        b.setName(msg[2]);
+        b.setAuctionTime(Integer.parseInt(msg[6].trim()));
+        b.setCurrentBid(Double.parseDouble(msg[4]));
+        b.getBids().add(new Bids(Integer.parseInt(msg[3].trim()),Double.parseDouble(msg[4])));
+        b.setDesc(msg[5]);
         following.add(b);
         in.AdicionaFollowing(b);
     }
@@ -473,7 +485,7 @@ public class Peer implements Runnable
      */
     public void msgMyOwnBooks(String [] msg)
     {
-        // 15 - sendbookF - 14;bookname;value;description;time
+        // 15 - sendbookF - 14;bookid;bookname;winnerId;value;description;time
         /*for(Book b : this.myOwn)
         {
             if(b.getName().equals(msg[1]))
@@ -482,11 +494,12 @@ public class Peer implements Runnable
             }
         }*/
         Book b = new Book();
-        b.setName(msg[1]);
-        b.setAuctionTime(Integer.parseInt(msg[4].trim()));
-        b.setCurrentBid(Double.parseDouble(msg[2]));
-        b.getBids().add(new Bids(1,Double.parseDouble(msg[2])));
-        b.setDesc(msg[3]);
+        b.setId(Integer.parseInt(msg[1].trim()));
+        b.setName(msg[2]);
+        b.setAuctionTime(Integer.parseInt(msg[6].trim()));
+        b.setCurrentBid(Double.parseDouble(msg[4]));
+        b.getBids().add(new Bids(Integer.parseInt(msg[3].trim()),Double.parseDouble(msg[4])));
+        b.setDesc(msg[5]);
         myOwn.add(b);
         in.AdicionaMyBooks(b);
     }
@@ -693,13 +706,13 @@ public class Peer implements Runnable
      * Envia para o servidor a mensagem pedindo para encerrar o leilao
      * @param bookname
      */
-    public void EndAuction(String bookname)
+    public void EndAuction(int bookId)
     {
-        //12;senderport;bookname;
+        //12;senderport;bookid;
         String msg="12;";
-        msg = msg.concat("" +this.getPort());
+        msg = msg.concat("" + this.getPort());
         msg = msg.concat(";");
-        msg = msg.concat(bookname);
+        msg = msg.concat("" + bookId);
         sendUnicast(this.getServer(),msg,true);
     }
     
@@ -733,13 +746,13 @@ public class Peer implements Runnable
      * @param value
      * 
      */
-    public void sendBidToServer(String name,String value)
+    public void sendBidToServer(int bookId,String value)
     {
        //10 - bid - 10;senderport;idbook;value
         String msg="10;";
-        msg = msg.concat("" +this.getPort());
+        msg = msg.concat("" + this.getPort());
         msg = msg.concat(";");
-        msg = msg.concat(name);
+        msg = msg.concat("" + bookId);
         msg = msg.concat(";");
         msg = msg.concat(value);
         sendUnicast(this.getServer(),msg,true);
@@ -837,7 +850,8 @@ public class Peer implements Runnable
          */
         public void msgBid(String[] msg)
         {
-            this.registerBid(msg[2], Integer.parseInt(msg[1]), 
+            //10;senderport;bookid;value
+            this.registerBid(Integer.parseInt(msg[2]), Integer.parseInt(msg[1]), 
                     Double.parseDouble(msg[3]));
         }
 
@@ -847,7 +861,7 @@ public class Peer implements Runnable
          */
         public void msgAuctionBook(String[] msg)
         {
-
+            // 11 - registerbook - 11;senderport;bookname;value;description;time
             this.registerBook(ids, msg[2], msg[4],Double.parseDouble(msg[3]), 
                      Integer.parseInt(msg[5]), Integer.parseInt(msg[1]));
             ids++;
@@ -859,11 +873,12 @@ public class Peer implements Runnable
          */
         public void msgWinner(Book b)
         {
+            //3;idVencedor;nomevencedor;bookname;valor
             Peer p = getPeerByPort(b.getWinner());
             if(p != null)
-                sendMulticast("3;" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
+                sendMulticast("3;" + b.getWinner() + ";" + p.getName() + ";" + b.getName() + ";" + b.getWinnerValue());
             else
-                sendMulticast("3;nowinner;" + b.getName() + ";" + b.getWinnerValue());
+                sendMulticast("3;nowinner;-1;" + b.getName() + ";" + b.getWinnerValue());
         }
         
         /**
@@ -872,8 +887,8 @@ public class Peer implements Runnable
          */
         public void msgEndAuction(String[] msg)
         {
-            
-            Book b = this.getBookByName(msg[2]);
+            // * 12 - endeauction - 12;senderport;bookid;
+            Book b = this.getBookById(Integer.parseInt(msg[2]));
             
             if(b.getOwnerId() == Integer.parseInt(msg[1]))
             {
@@ -942,12 +957,13 @@ public class Peer implements Runnable
          */
         public void sendToFollowers(Book b)
         {
+            // * 15 - sendbookF - 15;bookId;bookname;value;description;time
             for(Bids bid : b.getBids())
             {
                 Peer p = getPeerByPort(bid.getClientId());
             
                 if(p!=null)
-                    sendUnicast(p, "15;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                    sendUnicast(p, "15;" + b.getId() + ";"  + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
                         + ";" + b.getAuctionTime(), false);
             }
         }
@@ -958,11 +974,12 @@ public class Peer implements Runnable
          */
         public void sendToAuctioneer(Book b)
         {
+            //16 - sendbookO - 16;bookname;value;description;time
             //for(int port : b.getFollowing())
             //{
                 Peer p = getPeerByPort(b.getOwnerId());
                 if(p!=null)
-                    sendUnicast(p, "16;" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
+                    sendUnicast(p, "16;" + b.getId() + ";" + b.getName() + ";"  + b.getWinnerValue() +";" +b.getDesc()
                         + ";" + b.getAuctionTime(), false);
             //}
         }
@@ -977,8 +994,9 @@ public class Peer implements Runnable
             {
                 for(Book b:this.auctionbooks)
                 {
-                    //14 - sendbookA - 14;bookname;value;description;time
+                    //14 - sendbookA - 14;bookid;bookname;value;description;time
                     String msg ="14;";
+                    msg = msg.concat("" + b.getId());
                     msg = msg.concat(b.getName());
                     msg = msg.concat(";");
                     msg = msg.concat("" + b.getWinnerValue());
@@ -1030,6 +1048,21 @@ public class Peer implements Runnable
             }
             return null;
         }
+        
+         /**
+         * retorna o livro dado a sua id
+         * @param bid
+         * @return
+         */
+        public Book getBookById(int bid)
+        {
+            for(Book b : this.auctionbooks)
+            {
+                if(b.getId() == bid)
+                    return b;
+            }
+            return null;
+        }
 
         /**
          * adiciona o livro na lista de sendo leiloados
@@ -1068,10 +1101,10 @@ public class Peer implements Runnable
          * @param clientId
          * @param bid
          */
-        public void registerBid(String bookId, int clientId, double bid)
+        public void registerBid(int bookId, int clientId, double bid)
         {
            for(Book b : auctionbooks)
-               if(b.getName().equals(bookId))
+               if(b.getId() == (bookId))
                {
                    if(b.getWinnerValue()< bid && b.inAuction())
                    {
@@ -1101,7 +1134,7 @@ public class Peer implements Runnable
  * 3 - fimdeleilão - 3;nomevencedor;bookname;valor
  * 
  * unicast
- * 10 - bid - 10;senderport;bookname;value
+ * 10 - bid - 10;senderport;bookid;value
  * 11 - registerbook - 11;senderport;bookname;value;description;time
  * 12 - endeauction - 12;senderport;bookid;
  * 13 - allbooksrequest - 13;senderport
