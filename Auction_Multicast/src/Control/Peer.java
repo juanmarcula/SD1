@@ -902,7 +902,7 @@ public class Peer implements Runnable
             if(p != null)
                 sendMulticast("3;" + b.getWinner() + ";" + p.getName() + ";" + b.getId()+ ";" + b.getWinnerValue());
             else
-                sendMulticast("3;nowinner;-1;" + b.getId() + ";" + b.getWinnerValue());
+                sendMulticast("3;-1;nowinner;" + b.getId() + ";" + b.getWinnerValue());
         }
         
         /**
