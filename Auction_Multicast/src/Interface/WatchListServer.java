@@ -26,11 +26,20 @@ public class WatchListServer extends javax.swing.JFrame {
         //this.prencheTable();
     }
     
+    /**
+     * Limpa a tela e envia uma requisição dos livros pro servidor
+     */
     public void LimparAndRequest(){
         this.JLServerBooks.removeAll();
         this.in.P.RequestAllBooks();
         this.in.P.sleeptc(1000);
     }
+    
+    /**
+     * metodo chamado pela classe peer quando recebe um novo livro para adicionar na tela
+     * 
+     * @param b 
+     */
     
     public void AdicionaLivroServer(Book b){
         int rows = this.JLServerBooks.getRowCount();
@@ -43,7 +52,7 @@ public class WatchListServer extends javax.swing.JFrame {
         }
         
         DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
-        System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
+        //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
         String winner;
                   if(b.getWinner()==-1){
                       winner="";
@@ -54,28 +63,6 @@ public class WatchListServer extends javax.swing.JFrame {
         model.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),winner});
     }
 
-    public void prencheTable()
-    {
-        this.in.P.RequestAllBooks();
-        this.in.P.sleeptc(1000);
-        this.JLServerBooks.removeAll();
-        for(Book b : this.in.P.serverBooks)
-        {
-            if(b.inAuction())
-            {
-                String winner;
-                  if(b.getWinner()==-1){
-                      winner="";
-                  }
-                  else{
-                     winner=this.in.P.getPeerByPort(b.getWinner()).getName();
-                  }
-                DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
-                System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
-                model.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc()});
-            }
-        }
-    }
     
   /**
      * This method is called from within the constructor to initialize the form.
@@ -195,22 +182,34 @@ public class WatchListServer extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Ação do botao bid, que envia uma bid para o servidor, fecha a janela e limpa os campos
+     * 
+     * @param evt 
+     */
     private void JButtonBidServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JButtonBidServerActionPerformed
         int selecionada = this.JLServerBooks.getSelectedRow();
         if(selecionada > -1)
         {
             
             Integer bookid = (Integer) this.JLServerBooks.getValueAt(selecionada,0);
-            System.out.println(bookid);
+            //System.out.println(bookid);
             String value = this.JTPriceServer.getText();
             this.in.P.sendBidToServer(bookid, value);
         }
         this.JTPriceServer.setText(" ");
+        this.JLServerBooks.removeAll();
         this.setVisible(false);
     }//GEN-LAST:event_JButtonBidServerActionPerformed
 
+    
+    /**
+     * Acao do botao voltar Fecha a janela dos livros no servidor sem fechar o programa todo
+     * @param evt 
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.LimparAndRequest();
+        //this.LimparAndRequest();
+        this.JLServerBooks.removeAll();
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
