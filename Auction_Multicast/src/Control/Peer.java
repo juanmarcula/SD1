@@ -434,14 +434,15 @@ public class Peer implements Runnable
     public void msgEndAuction(String[] msg)
     {
             //3;idVencedor;nomevencedor;bookid;valor
+        Book bc = getBookById(Integer.parseInt(msg[3].trim()), following);
         if(Integer.parseInt(msg[1].trim()) == this.port)
-        {}    //ganhei
+        {in.GanheiLeilao(bc);}    //ganhei
         Book b = getBookById(Integer.parseInt(msg[3].trim()), myOwn);
         if(b!=null)
-        {}
+        {in.FinalizarMyBooks(b);}
         b = getBookById(Integer.parseInt(msg[3].trim()), following);
         if(b!=null)
-        {}
+        {in.FinalizarMyFollow(b);}
 
     }
     

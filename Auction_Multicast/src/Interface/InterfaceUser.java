@@ -9,6 +9,7 @@ import Control.Book;
 import Control.Peer;
 import Control.Communication;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -99,6 +100,7 @@ public class InterfaceUser extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        JTMyBooks.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(JTMyBooks);
 
         JBMyBooks.setText("End the auction");
@@ -239,6 +241,7 @@ public class InterfaceUser extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        JTFollowing.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(JTFollowing);
 
         LabelPriceFollow.setText("Bid $");
@@ -349,15 +352,27 @@ public class InterfaceUser extends javax.swing.JFrame {
     private void JBMyBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMyBooksActionPerformed
         int selecionada = this.JTMyBooks.getSelectedRow();
         Integer bookid = (Integer) this.JTMyBooks.getValueAt(selecionada,0);
-        P.EndAuction(bookid);
+        String time =(String) this.JTMyBooks.getValueAt(selecionada,3);
+        if(time.equals("Finalizado")){
+            JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            P.EndAuction(bookid);
+        }
     }//GEN-LAST:event_JBMyBooksActionPerformed
 
     private void JBBidFollowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBidFollowActionPerformed
         int selecionada = this.JTFollowing.getSelectedRow();
         Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
+        String time = (String) this.JTFollowing.getValueAt(selecionada,3);
         String value = this.JTxPriceFollow.getText();
         this.JTxPriceFollow.setText(" ");
-        this.P.sendBidToServer(bookid, value);
+        if(time.equals("Finalizado")){
+            JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            this.P.sendBidToServer(bookid, value);
+        }
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
     public void AdicionaFollowing(Book b)
@@ -372,6 +387,34 @@ public class InterfaceUser extends javax.swing.JFrame {
       //System.out.println(">>>>>>>>>>>ADD follow");
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
       modelFollow.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),P.getPeerByPort(b.getWinner()).getName()});
+    }
+    
+    public void FinalizarMyBooks(Book b){
+      DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
+      int rows = this.JTMyBooks.getRowCount();
+      for(int i=0;i<rows;i++){
+          Integer bookid = (Integer) this.JTMyBooks.getValueAt(i,0);
+          if(bookid==b.getId()){
+              model.setValueAt("Finalizado", i , 3);
+          }
+       }
+    }
+    
+    public void FinalizarMyFollow(Book b){
+      DefaultTableModel model = (DefaultTableModel) this.JTFollowing.getModel();
+      int rows = this.JTFollowing.getRowCount();
+      for(int i=0;i<rows;i++){
+          Integer bookid = (Integer) this.JTFollowing.getValueAt(i,0);
+          if(bookid==b.getId()){
+              model.setValueAt("Finalizado", i , 3);
+          }
+       }
+    }
+    
+    public void GanheiLeilao(Book b){
+        String msg="Parabéns, você ganhou o leilão do livro: ";
+        msg+=b.getName();
+        JOptionPane.showMessageDialog(this,msg,"Ganhou leilão",JOptionPane.PLAIN_MESSAGE);
     }
     
     public void AdicionaMyBooks(Book b)
