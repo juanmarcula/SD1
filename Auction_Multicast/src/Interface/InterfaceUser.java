@@ -322,12 +322,24 @@ public class InterfaceUser extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Ação do botão de Verificar os livros do servidor, essa ação limpa os valores que possuiam antes
+     * na interface e torna a interface visivel com os novos produtos em leilão
+     * 
+     * @param evt 
+     */
     private void JBServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBServerActionPerformed
         // TODO add your handling code here:
         ws.LimparAndRequest();
         ws.setVisible(true);
     }//GEN-LAST:event_JBServerActionPerformed
 
+    /**
+     * Adiciona um livro para leilão, essa acão do botão adiciona pega os valores preenchidos
+     * pelo usuario e os envia para o servidor usando o metodo unicast de cadastro de livros
+     * 
+     * @param evt 
+     */
     private void JBAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBAddActionPerformed
        String name = this.JTxName.getText();
        String description = this.JTxDescription.getText();
@@ -349,6 +361,12 @@ public class InterfaceUser extends javax.swing.JFrame {
        P.sendBookToServer(name, value, description, time);
     }//GEN-LAST:event_JBAddActionPerformed
 
+    /**
+     * Esse metodo é a ação do botao end auction ele finaliza o leilão do livro selecionado
+     * caso esse leilão ainda estaja ativo
+     * 
+     * @param evt 
+     */
     private void JBMyBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMyBooksActionPerformed
         int selecionada = this.JTMyBooks.getSelectedRow();
         Integer bookid = (Integer) this.JTMyBooks.getValueAt(selecionada,0);
@@ -361,6 +379,13 @@ public class InterfaceUser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JBMyBooksActionPerformed
 
+    
+    /**
+     * envia uma aposta em um dos livros que você esta acompanhando o leilão, caso o leilão ainda esteja
+     * ativo, esse evento é ativado quando clicar no botão Bid
+     * 
+     * @param evt 
+     */
     private void JBBidFollowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBidFollowActionPerformed
         int selecionada = this.JTFollowing.getSelectedRow();
         Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
@@ -375,6 +400,14 @@ public class InterfaceUser extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
+    /**
+     * Esse metodo serve para adicionar um novo livro nos livros seguidos, e para atualizar aqueles
+     * que já estão sendo seguido O metodo é chamado pela classe peer quando recebe uma msg unicast do
+     * servidor com alguma atualizacao do livro seguido, Caso o livro já esteja no painel, ele é removido
+     * e sua atualizacao é adicionada
+     * 
+     * @param b 
+     */
     public void AdicionaFollowing(Book b)
     {
       int rows = this.JTFollowing.getRowCount();
@@ -389,6 +422,12 @@ public class InterfaceUser extends javax.swing.JFrame {
       modelFollow.addRow(new Object[]{b.getId(),b.getName(),b.getCurrentBid(),b.getEndTimeAuction().toString(),b.getDesc(),P.getPeerByPort(b.getWinner()).getName()});
     }
     
+    /**
+     * Esse metodo é chamado pela classe peer qndo um leilão é finalizado, 
+     * e ele muda o tempo do leilão para finalizado
+     * Este metodo serve para a tabela My own books
+     * @param b 
+     */
     public void FinalizarMyBooks(Book b){
       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
       int rows = this.JTMyBooks.getRowCount();
@@ -400,6 +439,13 @@ public class InterfaceUser extends javax.swing.JFrame {
        }
     }
     
+    
+     /**
+     * Esse metodo é chamado pela classe peer qndo um leilão é finalizado, 
+     * e ele muda o tempo do leilão para finalizado
+     * Este metodo serve para a tabela My follow books
+     * @param b 
+     */
     public void FinalizarMyFollow(Book b){
       DefaultTableModel model = (DefaultTableModel) this.JTFollowing.getModel();
       int rows = this.JTFollowing.getRowCount();
@@ -411,12 +457,26 @@ public class InterfaceUser extends javax.swing.JFrame {
        }
     }
     
+    /**
+     * Esse metodo mostra uma mensagem quando você ganha um leilão
+     * 
+     * @param b 
+     */
     public void GanheiLeilao(Book b){
         String msg="Parabéns, você ganhou o leilão do livro: ";
         msg+=b.getName();
         JOptionPane.showMessageDialog(this,msg,"Ganhou leilão",JOptionPane.PLAIN_MESSAGE);
     }
     
+    
+    /**
+     * Esse metodo serve para adicionar um novo livro nos meus livros, e para atualizar aqueles
+     * quando um livro recebe um lance O metodo é chamado pela classe peer quando recebe uma msg unicast do
+     * servidor com alguma atualizacao do livro , Caso o livro já esteja no painel, ele é removido
+     * e sua atualizacao é adicionada
+     * 
+     * @param b 
+     */
     public void AdicionaMyBooks(Book b)
     {
       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
