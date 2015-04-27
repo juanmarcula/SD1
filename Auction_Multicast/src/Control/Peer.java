@@ -209,6 +209,12 @@ public class Peer implements Runnable
 
     }
 
+    /**
+     * metodo usado para enviar a chave publica para o servidor
+     * 
+     * @param p
+     * @param m 
+     */
     public void sendPublicKey(Peer p, byte[] m) 
     {
         DatagramPacket out;
@@ -242,6 +248,12 @@ public class Peer implements Runnable
             return false;
     }
     
+    
+    /**
+     * metodo que retorna o peer que é o servidor
+     * 
+     * @return Peer - Instacia do servidor
+     */
     public Peer getServer()
     {
         try
@@ -301,6 +313,7 @@ public class Peer implements Runnable
    }
 
     /**
+     * retorna o objeto da classe InetAddress com o Ip do peer
      * @return the ip
      */
     public InetAddress getIp() {
@@ -316,6 +329,8 @@ public class Peer implements Runnable
     }
     
     /**
+     * retorna seu endereco de IP por string
+     * 
      * @param a
      * @return the ip
      */
@@ -325,6 +340,8 @@ public class Peer implements Runnable
     }
 
     /**
+     * Inicializa o endereco de IP com a string enviada
+     * 
      * @param ip the ip to set
      */
     public void setIp(String ip) {
@@ -332,6 +349,7 @@ public class Peer implements Runnable
     }
 
     /**
+     * retorna a porta que o Peer está usando
      * @return the port
      */
     public int getPort() {
@@ -339,6 +357,8 @@ public class Peer implements Runnable
     }
 
     /**
+     * Incializa a variavel port com a porta especificada por parametro
+     * 
      * @param port the port to set
      */
     public void setPort(int port) {
@@ -346,6 +366,8 @@ public class Peer implements Runnable
     }
 
     /**
+     * Retorna a sua propria public key
+     * 
      * @return the publicKey
      */
     public PublicKey getPublicKey() {
@@ -353,6 +375,8 @@ public class Peer implements Runnable
     }
 
     /**
+     * Inicializa sua public key com o valor passado por parametro
+     * 
      * @param publicKey the publicKey to set
      */
     public void setPublicKey(PublicKey publicKey) {
@@ -431,6 +455,14 @@ public class Peer implements Runnable
         }
     }
     
+    /**
+     * Trata o recebimento de mensagem do tipo de fim de leilão, no caso 
+     * se for o Peer vencendo chama o metodo da interface para mostrar o vencedor
+     * se for um Follower, chama o metodo para finalizar o leilão na tabela da interface do usuario
+     * se for um livro proprio, chama o metodo para indicar graficamente que o leilão desse livro acabou
+     * 
+     * @param msg 
+     */
     public void msgEndAuction(String[] msg)
     {
             //3;idVencedor;nomevencedor;bookid;valor
@@ -448,6 +480,8 @@ public class Peer implements Runnable
     
     /**
      * trata o recebimento de todos os livros que estão no servidor
+     * Quando o usuario requsita todos os livros em leilão ativo no servidor
+     * 
      * @param msg 
      */
     public void msgServerBooks(String [] msg)
@@ -474,6 +508,7 @@ public class Peer implements Runnable
     
     /**
      * trata o recebimento dos livros que estou interessado
+     * 
      * @param msg 
      */
     public void msgFollowingBooks(String [] msg)
@@ -499,6 +534,7 @@ public class Peer implements Runnable
     
     /**
      * Trata o recebimento de atualização dos livros que estou leiloando
+     * 
      * @param msg 
      */
     public void msgMyOwnBooks(String [] msg)
