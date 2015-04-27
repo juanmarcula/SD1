@@ -198,7 +198,9 @@ public class WatchListServer extends javax.swing.JFrame {
             this.in.P.sendBidToServer(bookid, value);
         }
         this.JTPriceServer.setText(" ");
-        this.JLServerBooks.removeAll();
+        DefaultTableModel tableModel =(DefaultTableModel) JLServerBooks.getModel();  
+        tableModel.setNumRows(0);  
+        
         this.setVisible(false);
     }//GEN-LAST:event_JButtonBidServerActionPerformed
 
@@ -209,7 +211,8 @@ public class WatchListServer extends javax.swing.JFrame {
      */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //this.LimparAndRequest();
-        this.JLServerBooks.removeAll();
+        DefaultTableModel tableModel =(DefaultTableModel) JLServerBooks.getModel();  
+        tableModel.setNumRows(0);  
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
