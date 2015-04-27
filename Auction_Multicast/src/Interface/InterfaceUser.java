@@ -369,13 +369,15 @@ public class InterfaceUser extends javax.swing.JFrame {
      */
     private void JBMyBooksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBMyBooksActionPerformed
         int selecionada = this.JTMyBooks.getSelectedRow();
-        Integer bookid = (Integer) this.JTMyBooks.getValueAt(selecionada,0);
-        String time =(String) this.JTMyBooks.getValueAt(selecionada,3);
-        if(time.equals("Finalizado")){
-            JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            P.EndAuction(bookid);
+        if(selecionada>-1){
+            Integer bookid = (Integer) this.JTMyBooks.getValueAt(selecionada,0);
+            String time =(String) this.JTMyBooks.getValueAt(selecionada,3);
+            if(time.equals("Finalizado")){
+                JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                P.EndAuction(bookid);
+            }
         }
     }//GEN-LAST:event_JBMyBooksActionPerformed
 
@@ -388,15 +390,17 @@ public class InterfaceUser extends javax.swing.JFrame {
      */
     private void JBBidFollowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBBidFollowActionPerformed
         int selecionada = this.JTFollowing.getSelectedRow();
-        Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
-        String time = (String) this.JTFollowing.getValueAt(selecionada,3);
-        String value = this.JTxPriceFollow.getText();
-        this.JTxPriceFollow.setText(" ");
-        if(time.equals("Finalizado")){
-            JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            this.P.sendBidToServer(bookid, value);
+        if(selecionada>-1){
+            Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
+            String time = (String) this.JTFollowing.getValueAt(selecionada,3);
+            String value = this.JTxPriceFollow.getText();
+            this.JTxPriceFollow.setText(" ");
+            if(time.equals("Finalizado")){
+                JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+                this.P.sendBidToServer(bookid, value);
+            }
         }
     }//GEN-LAST:event_JBBidFollowActionPerformed
 
