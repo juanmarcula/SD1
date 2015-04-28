@@ -48,6 +48,7 @@ public class WatchListServer extends javax.swing.JFrame {
           if(bookid==b.getId()){
               DefaultTableModel model = (DefaultTableModel) this.JLServerBooks.getModel();
               model.removeRow(i);
+              break;
           }
         }
         
@@ -197,7 +198,7 @@ public class WatchListServer extends javax.swing.JFrame {
             String value = this.JTPriceServer.getText();
             this.in.P.sendBidToServer(bookid, value);
         }
-        this.JTPriceServer.setText(" ");
+        this.JTPriceServer.setText("");
         DefaultTableModel tableModel =(DefaultTableModel) JLServerBooks.getModel();  
         tableModel.setNumRows(0);  
         

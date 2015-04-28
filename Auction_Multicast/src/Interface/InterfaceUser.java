@@ -354,10 +354,10 @@ public class InterfaceUser extends javax.swing.JFrame {
        this.MyBooks.add(B);
        //DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
        //model.addRow(new Object[]{id,name,value,time,description});
-       this.JTxName.setText(" ");
-       this.JTxDescription.setText(" ");
-       this.JTxTime.setText(" ");
-       this.jTxInitialPrice.setText(" ");
+       this.JTxName.setText("");
+       this.JTxDescription.setText("");
+       this.JTxTime.setText("");
+       this.jTxInitialPrice.setText("");
        P.sendBookToServer(name, value, description, time);
     }//GEN-LAST:event_JBAddActionPerformed
 
@@ -394,7 +394,7 @@ public class InterfaceUser extends javax.swing.JFrame {
             Integer bookid = (Integer) this.JTFollowing.getValueAt(selecionada,0);
             String time = (String) this.JTFollowing.getValueAt(selecionada,3);
             String value = this.JTxPriceFollow.getText();
-            this.JTxPriceFollow.setText(" ");
+            this.JTxPriceFollow.setText("");
             if(time.equals("Finalizado")){
                 JOptionPane.showMessageDialog(this,"Este Leilão já foi finalizado","Leilão Encerrado",JOptionPane.ERROR_MESSAGE);
             }
@@ -419,6 +419,7 @@ public class InterfaceUser extends javax.swing.JFrame {
           Integer bookid = (Integer) this.JTFollowing.getValueAt(i,0);
           if(bookid==b.getId()){
               this.modelFollow.removeRow(i);
+              break;
           }
        }
       //System.out.println(">>>>>>>>>>>ADD follow");
@@ -484,11 +485,15 @@ public class InterfaceUser extends javax.swing.JFrame {
     public void AdicionaMyBooks(Book b)
     {
       DefaultTableModel model = (DefaultTableModel) this.JTMyBooks.getModel();
-      int rows = this.JTMyBooks.getRowCount();
+      int rows = model.getRowCount();
+      System.out.println(rows +">>>>>>>>>>>>>>>>>");
       for(int i=0;i<rows;i++){
-          Integer bookid = (Integer) this.JTMyBooks.getValueAt(i,0);
+          System.out.println(i +">>>>>>>>>>>>>>>>>");
+          Integer bookid = (Integer) model.getValueAt(i,0);
+          System.out.println(bookid +">>>>>>>>>>>>>>>>>");
           if(bookid==b.getId()){
               model.removeRow(i);
+              break;
           }
        }
       //System.out.println("nome " +b.getName() +"valor" +b.getWinnerValue());
