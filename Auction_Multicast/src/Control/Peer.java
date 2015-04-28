@@ -143,12 +143,14 @@ public class Peer implements Runnable
         {
             crypto = new Encryption();
             //--------------------------------------------------------------------
-            while(peers.size()<4)
+            int dt=0;
+            while(dt <= 1000 || peers.size()<4)
             {
                 sleeptc(10);
                 //Send hello message
                 this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
                         this.getIp(1) + ";");
+                dt++;
             };
 
             this.isServer = false;
@@ -163,7 +165,7 @@ public class Peer implements Runnable
                 sleeptc(100);
 
             //wait for a server to be elected
-            int dt = 0;
+            dt = 0;
             while(this.getServer() == null && dt < 10000)
             {
                 sleeptc(10);
