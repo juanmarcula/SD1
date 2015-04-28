@@ -61,7 +61,8 @@ public class Peer implements Runnable
     public ArrayList<Book> myOwn;
     public ArrayList<Book> serverBooks;
     Interface.InterfaceUser in;
-    
+     Thread multicastListener;
+             Thread unicastListener;
     public Peer(String name, String ip, int port, boolean main)
     {
         
@@ -92,6 +93,7 @@ public class Peer implements Runnable
                     {
                         ServidorDown=true;
                         //msgServerNotAvailable();
+                        System.out.println("Caiu");
 
                     } 
                     HelloServidor = false;                 
@@ -101,7 +103,7 @@ public class Peer implements Runnable
                 this.timerHelloServidor = new Timer(3000,action); //ativa a cada 1000 (1 segundo)
                 
               initializeSockets();
-              Thread multicastListener;
+             
 
 
                 multicastListener = new Thread()
@@ -146,6 +148,7 @@ public class Peer implements Runnable
     {
         while(true)
         {
+            System.out.println("###### STARTING ######");
             crypto = new Encryption();
             //--------------------------------------------------------------------
             int dt=0;
@@ -206,15 +209,25 @@ public class Peer implements Runnable
 
             while(!ServidorDown)
             {
-                //System.out.println("Servidor ativo");
+                sleeptc(100);
+                int tt = 0;
+               if(ServidorDown==true)
+                   break;
             }
-
+            System.out.println("###### RESTARTING -SEVER DOWN ######");
             peers = new ArrayList<>();
             following = new ArrayList<>();
             myOwn = new ArrayList<>();
             serverBooks = new ArrayList<>();
-            System.out.println("###### RESTARTING -SEVER DOWN ######");
-            
+            in.setVisible(false);
+            timerHelloServidor.stop();
+            /*ucSocket.close();
+            mcSocket.close();
+            initializeSockets();
+            multicastListener.stop();
+            unicastListener.stop();
+            multicastListener.start();
+            unicastListener.start();*/
         }
 
     }
@@ -822,7 +835,7 @@ public class Peer implements Runnable
      */
     public void Client()
     {
-        Thread unicastListener;
+
         unicastListener = new Thread()
         {
             @Override
