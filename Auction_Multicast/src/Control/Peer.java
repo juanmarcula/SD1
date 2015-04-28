@@ -82,18 +82,23 @@ public class Peer implements Runnable
                 public void actionPerformed(@SuppressWarnings("unused") java.awt.event.ActionEvent e) 
                 {  
                     if(getServer().getPort() == getPort())
+                    {
                         server.updateList();
+                        sendMulticast("1;" + getPort() + ";");
+                    }
                 //System.out.println("tick");
+                    sleeptc(100);
                     if(HelloServidor==false)
                     {
                         ServidorDown=true;
-                        msgServerNotAvailable();
+                        //msgServerNotAvailable();
 
+                    } 
+                    HelloServidor = false;                 
 
-                    }  
                 }  
                 }; 
-                this.timerHelloServidor = new Timer(1000,action); //ativa a cada 1000 (1 segundo)
+                this.timerHelloServidor = new Timer(3000,action); //ativa a cada 1000 (1 segundo)
                 
               initializeSockets();
               Thread multicastListener;
@@ -112,7 +117,7 @@ public class Peer implements Runnable
                                     DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                                     mcSocket.receive(messageIn);
                                     onMulticastMessage(messageIn);
-                                    System.out.println(getName() + " Received:" + new String(messageIn.getData()));
+                                    //System.out.println(getName() + " Received:" + new String(messageIn.getData()));
                                 }	
                         }
                         catch (SocketException e)
@@ -144,7 +149,7 @@ public class Peer implements Runnable
             crypto = new Encryption();
             //--------------------------------------------------------------------
             int dt=0;
-            while(dt <= 1000 || peers.size()<4)
+            while(dt <= 100 || peers.size()<4)
             {
                 sleeptc(10);
                 //Send hello message
@@ -199,7 +204,10 @@ public class Peer implements Runnable
             //this.sendPublicKey(this.getServer(), crypto.getPublicKey().getEncoded());
             //--------------------------------------------------------------------
 
-            while(!ServidorDown);
+            while(!ServidorDown)
+            {
+                //System.out.println("Servidor ativo");
+            }
 
             peers = new ArrayList<>();
             following = new ArrayList<>();
@@ -448,18 +456,21 @@ public class Peer implements Runnable
         {
             if(this.getPeerByPort(Integer.parseInt(msg[1])).isServer == false)
             {
+                this.HelloServidor=true;
                 this.getPeerByPort(Integer.parseInt(msg[1])).setAsServer();
                 this.timerHelloServidor.start();
                 this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
                         this.getIp(1) + ";");
                 if(isServer)
                                 this.sendMulticast("1;" + this.getPort() + ";");
+                
             }
             else
             {
             //seta a variavel em true
-                
-                this.HelloServidor=true;
+                //if(this.getPeerByPort(Integer.parseInt(msg[1])).isServer == true)
+                    this.HelloServidor=true;
+                    //System.out.println("ta rolando");
             }
 
         }
@@ -620,7 +631,10 @@ public class Peer implements Runnable
         else
         {
             p = getPeerByPort(in.getPort());
-            ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+            //if(p.getPublicKey()!=null)
+                ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
+            //else
+              //   ins = new String(in.getData()).split(";");
             System.out.println(this.getName() + " " + Arrays.toString(ins));
         }
         if(ins.length>0)
