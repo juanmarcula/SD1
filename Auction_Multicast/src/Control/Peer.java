@@ -280,8 +280,11 @@ public class Peer implements Runnable
 
         }
     }
-    //Peers ops
-    
+    /**
+    * indica se o peer atual é o de maior prioridade
+    * 
+    * @return boolean 
+    */
     public boolean isHighestPriority()
     {
         int mbs = -1;
@@ -328,6 +331,10 @@ public class Peer implements Runnable
         }
     }
 
+    /**
+    * define esse peer como servidor
+    * 
+    */
     public void setAsServer()
     {
         this.isServer =  true;
