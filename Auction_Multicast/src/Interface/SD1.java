@@ -19,13 +19,13 @@ public class SD1 {
      */
     static int port = 7896;
     static int nPeers = 4;
-    static String names[] = {"X", "Y", "Z", "W"};
+    static String names[] = {"K", "Y", "Z", "W", "X"};
     public static void main(String[] args) 
     {
         for(int i = 0; i < nPeers; i++)
         {
             Peer p;
-            p = new Peer(names[i], "localhost", port, true);       
+            p = new Peer(names[i], "192.168.109.242", port, true);       
             Thread t = new Thread((Runnable) p);
             t.start();    
             port++;

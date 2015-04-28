@@ -50,7 +50,7 @@ public class Peer implements Runnable
     private boolean ServidorDown=false;
     
     private MulticastSocket mcSocket;
-    private final String MULTICAST_IP = "228.5.6.7";
+    private final String MULTICAST_IP = "228.5.6.10";
     private InetAddress MULTICAST_GROUP;
     private final int MULTICAST_PORT = 6789;
     
@@ -164,7 +164,7 @@ public class Peer implements Runnable
 
             //wait for a server to be elected
             int dt = 0;
-            while(this.getServer() == null && dt < 1000)
+            while(this.getServer() == null && dt < 10000)
             {
                 sleeptc(10);
                 dt+=1;
@@ -437,6 +437,10 @@ public class Peer implements Runnable
         {
             Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
             peers.add(p);
+            this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
+                        this.getIp(1) + ";");
+            if(isServer)
+                                this.sendMulticast("1;" + this.getPort() + ";");
         }
         if(Integer.parseInt(msg[0]) == 1)
         {
@@ -444,6 +448,10 @@ public class Peer implements Runnable
             {
                 this.getPeerByPort(Integer.parseInt(msg[1])).setAsServer();
                 this.timerHelloServidor.start();
+                this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
+                        this.getIp(1) + ";");
+                if(isServer)
+                                this.sendMulticast("1;" + this.getPort() + ";");
             }
             else
             {
