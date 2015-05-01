@@ -199,7 +199,7 @@ public class Peer implements Runnable
             if(getServer() != getPeerByPort(this.port))
             {
                 System.out.println(this.getName() + " abriu listener para o server");
-                this.Client();
+                //this.Client();
                 this.clientOn = true;
             }
             //pede chave publica
@@ -890,9 +890,12 @@ public class Peer implements Runnable
                             System.out.println("Cliente ouvindo " + getName());
                             buffer = new byte[128];
                             DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-                            ucSocket.receive(request);     
-                            System.out.println(getName() + " Received:" + new String(request.getData()));
-                            onUnicastMessage(request);
+                            ucSocket.receive(request);  
+                            if(clientOn==true)
+                            {
+                                System.out.println(getName() + " Received:" + new String(request.getData()));
+                                onUnicastMessage(request);
+                            }
                         }
                         else
                             sleeptc(5);
@@ -1015,6 +1018,7 @@ public class Peer implements Runnable
             try 
             {
                 ucSocket.receive(messageIn);
+                //ucSocket.setSoTimeout(10);
                 if(messageIn.getPort() == p.getPort())
                 {
                     PublicKey pk;            
@@ -1028,10 +1032,17 @@ public class Peer implements Runnable
                     catch (InvalidKeySpecException e) 
                     {
                         System.out.println("InvalidKeySpecException: " + e.getMessage());
+                        return null;
                     } 
                     catch (NoSuchAlgorithmException e) 
                     {
                         System.out.println("NoSuchAlgorithmException: " + e.getMessage());
+                        return null;
+                    }
+                    catch (Exception e) 
+                    {
+                        System.out.println("Exception: " + e.getMessage());
+                        return null;
                     }
                 }
                 else 
