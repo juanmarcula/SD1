@@ -33,7 +33,7 @@ public class Peer implements Runnable
     private String name;
     private int priority;
     private boolean isServer;
-    private boolean isAuctioneer;
+    boolean clientOn;
     private boolean isMyself;
     private boolean serverHasPk;
     private int timeOutCounter;
@@ -92,7 +92,7 @@ public class Peer implements Runnable
                     if(HelloServidor==false)
                     {
                         ServidorDown=true;
-                        //msgServerNotAvailable();
+                        msgServerNotAvailable();
                         System.out.println("Caiu");
 
                     } 
@@ -146,58 +146,77 @@ public class Peer implements Runnable
     @Override
     public void run()
     {
+        clientOn = false;
+            
+        this.Client();
         while(true)
         {
             System.out.println("###### STARTING ######");
             crypto = new Encryption();
+            clientOn = false;
+            
             //--------------------------------------------------------------------
             int dt=0;
-            while(dt <= 100 || peers.size()<4)
+            while(dt <= 500 || peers.size()<4)
             {
                 sleeptc(10);
                 //Send hello message
                 this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
                         this.getIp(1) + ";");
                 dt++;
-            };
-            sleeptc(100);
-            this.isServer = false;
-            if(isHighestPriority())
-            {
-                this.sendMulticast("1;" + this.getPort() + ";");
-                System.out.println(this.getName() + " Disse que é o server");
-                server = new Server();
-                this.isServer = true;
             }
-            else
-                sleeptc(100);
-
-            //wait for a server to be elected
+            sleeptc(100);
+            System.out.println(this.getName() + " Saiu loop");
+            this.isServer = false;
             dt = 0;
+            
             while(this.getServer() == null && dt < 10000)
             {
+                if(isHighestPriority())
+                {
+                    for(int i = 0; i < 10; i++)
+                    {
+                        sleeptc(10);
+                        this.sendMulticast("1;" + this.getPort() + ";");
+                        System.out.println(this.getName() + " Disse que é o server");
+                        server = new Server();
+                        this.isServer = true;
+                    }
+                }
+                else
+                    sleeptc(100);
                 sleeptc(10);
                 dt+=1;
             }
-            if(dt>=1000)
+            //wait for a server to be elected
+            
+                
+            if(dt>=10000)
                 System.out.println(this.getName() + " Não achou o server");
             else
                 System.out.println(this.getName() + " Achou o server");
 
             if(getServer() != getPeerByPort(this.port))
             {
-                System.out.println("Abriu para " + this.getName());
+                System.out.println(this.getName() + " abriu listener para o server");
                 this.Client();
+                this.clientOn = true;
             }
             //pede chave publica
 
 
             if(getServer() == getPeerByPort(this.port))
             {
+                System.out.println("Pedindo as chaves!");
                 server.msgAskPublicKey();
-                this.Client();
+                //this.Client();
+                System.out.println("Recebi as chaves!");
+                clientOn = true;
+                //if(unicastListener.isInterrupted())
+                //    unicastListener.start();
+                
             }
-
+            
             in = new InterfaceUser(this,this.isServer,this.getName());
             in.setVisible(true);
             getPeerByPort(this.port).setPublicKey(crypto.getPublicKey());
@@ -215,12 +234,18 @@ public class Peer implements Runnable
                    break;
             }
             System.out.println("###### RESTARTING -SEVER DOWN ######");
+            clientOn = false;
             peers = new ArrayList<>();
             following = new ArrayList<>();
             myOwn = new ArrayList<>();
             serverBooks = new ArrayList<>();
             in.setVisible(false);
             timerHelloServidor.stop();
+            ServidorDown = false;
+            setPublicKey(null);
+            sleeptc(1000);
+            //unicastListener.interrupt();
+            
             /*ucSocket.close();
             mcSocket.close();
             initializeSockets();
@@ -259,13 +284,21 @@ public class Peer implements Runnable
     
     public boolean isHighestPriority()
     {
-        int max = -1;
         int mbs = -1;
-        for(Peer p : this.getPeers())
-            if(p.getPort()> max)
+                   
+        for(Peer p : getPeers())
+        {
+            int po = p.getPort(); 
+            if(po > mbs)
                 mbs = p.getPort();
+        //if(port >= 7905)
+         //   System.out.println("Minha porta: " + port + " Estou vendo: " + p.getPort()
+        //    + " O max é: " + mbs);
+        }
+       // if(port >= 7905)
+        //    System.out.println("O MBS do " + port + " é: " + mbs);
         
-        if(mbs == this.port)
+        if(mbs == port)
             return true;
         else
             return false;
@@ -458,12 +491,16 @@ public class Peer implements Runnable
     {
         if(this.getPeerByPort(Integer.parseInt(msg[1])) == null)
         {
-            Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
-            peers.add(p);
-            this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
-                        this.getIp(1) + ";");
-            if(isServer)
-                                this.sendMulticast("1;" + this.getPort() + ";");
+            if(Integer.parseInt(msg[0]) == 0)
+            {
+                System.out.println(this.getName() + " " + Arrays.toString(msg));
+                Peer p = new Peer(msg[2], msg[3], Integer.parseInt(msg[1]), false);
+                peers.add(p);
+                this.sendMulticast("0;" + this.getPort() + ";" + this.getName() + ";" + 
+                            this.getIp(1) + ";");
+                if(isServer)
+                     this.sendMulticast("1;" + this.getPort() + ";");
+            }
         }
         if(Integer.parseInt(msg[0]) == 1)
         {
@@ -622,7 +659,7 @@ public class Peer implements Runnable
         Peer p = getPeerByPort(in.getPort());
         System.out.println("Sou servidor? " + getPeerByPort(port).isServer);
         
-        if(p!= null && p.isServer)
+        if(p != null && p.isServer)
         {
             try
             {
@@ -634,8 +671,8 @@ public class Peer implements Runnable
                      a = ins[5];
                 System.out.println(this.getName() + " " + Arrays.toString(ins));
             }
-            catch(Exception e)//finally//(NumberFormatException e)
-            {;
+            catch(Exception e)
+            {
                 ins = new String(in.getData()).split(";");
                 String a  = ins[0];
                 System.out.println(this.getName() + " " + Arrays.toString(ins));
@@ -644,14 +681,16 @@ public class Peer implements Runnable
         else
         {
             p = getPeerByPort(in.getPort());
-            //if(p.getPublicKey()!=null)
+            if(p.getPublicKey()!=null && getPeerByPort(port).isServer)
                 ins = new String(crypto.decryptMsg(p.getPublicKey(),in.getData())).split(";");
-            //else
-              //   ins = new String(in.getData()).split(";");
+            else
+                 ins = new String(in.getData()).split(";");
             System.out.println(this.getName() + " " + Arrays.toString(ins));
         }
         if(ins.length>0)
         {
+            p = getPeerByPort(in.getPort());
+           System.out.println(getName() + " Recebi de: " + p.getName());
             switch(Integer.parseInt(ins[0]))
             {
                 case 10:
@@ -693,7 +732,7 @@ public class Peer implements Runnable
     public void sendUnicast(Peer p, String msg,boolean encry)
     {
         byte [] m = msg.getBytes();
-        System.out.println(Arrays.toString(m));
+        //System.out.println(Arrays.toString(m));
         if(encry){
             m=this.crypto.encryptMsg(m);
         }
@@ -835,22 +874,28 @@ public class Peer implements Runnable
      */
     public void Client()
     {
-
         unicastListener = new Thread()
         {
             @Override
             public void run()
             {
+                int tct;
                 try
                 {
                     byte[] buffer;
                     while(true)
                     {
-                        buffer = new byte[128];
-                        DatagramPacket request = new DatagramPacket(buffer, buffer.length);
-                        ucSocket.receive(request);     
-                        System.out.println(getName() + " Received:" + new String(request.getData()));
-                        onUnicastMessage(request);
+                        if(clientOn == true)
+                        {
+                            System.out.println("Cliente ouvindo " + getName());
+                            buffer = new byte[128];
+                            DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                            ucSocket.receive(request);     
+                            System.out.println(getName() + " Received:" + new String(request.getData()));
+                            onUnicastMessage(request);
+                        }
+                        else
+                            sleeptc(5);
                     }
                 }
                 catch (SocketException e)
@@ -861,15 +906,14 @@ public class Peer implements Runnable
                 {
                     System.out.println("IO: " + e.getMessage());
                 }
-                finally 
+                catch (Exception e) 
                 {
-                    if(ucSocket != null) 
-                    {
-                        System.out.println(this.getName() + " ucSocket closing ");
-                    
-                        ucSocket.close();
-                    }
+                    System.out.println(getName() + " Exception: " + e.getMessage());
                 }
+               // finally
+                //{
+                  //  System.out.println("AHHHHHHHHHHHH");
+            //    }
             }
         };
         unicastListener.start();
@@ -964,33 +1008,38 @@ public class Peer implements Runnable
          * Recebe a chave publica de um cliente
          * @return
          */
-        public PublicKey msgReceivePk()
+        public PublicKey msgReceivePk(Peer p)
         {
             byte[] buffer = new byte[165];
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             try 
             {
                 ucSocket.receive(messageIn);
-                PublicKey pk;            
+                if(messageIn.getPort() == p.getPort())
+                {
+                    PublicKey pk;            
 
-                try 
-                {
-                    pk = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(messageIn.getData()));
-                    
-                    return pk;
-                } 
-                catch (InvalidKeySpecException e) 
-                {
-                    System.out.println("InvalidKeySpecException: " + e.getMessage());
-                } 
-                catch (NoSuchAlgorithmException e) 
-                {
-                    System.out.println("NoSuchAlgorithmException: " + e.getMessage());
+                    try 
+                    {
+                        pk = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(messageIn.getData()));
+
+                        return pk;
+                    } 
+                    catch (InvalidKeySpecException e) 
+                    {
+                        System.out.println("InvalidKeySpecException: " + e.getMessage());
+                    } 
+                    catch (NoSuchAlgorithmException e) 
+                    {
+                        System.out.println("NoSuchAlgorithmException: " + e.getMessage());
+                    }
                 }
+                else 
+                    return null;
             } 
             catch (IOException e) 
             {
-                System.out.println("IOException: " + e.getMessage());
+                System.out.println(getName() + " IOException: " + e.getMessage());
             }
             return null;
         }
@@ -1004,8 +1053,16 @@ public class Peer implements Runnable
             {
                 if(p.getPort()!=getPort())
                 {
-                    sendUnicast(p, "17;",false);
-                    p.setPublicKey(msgReceivePk());
+                    System.out.println("Pedindo a chave de: " + p.getName());
+                    
+                    PublicKey pk = null;
+                    while(pk == null)
+                    {
+                        sendUnicast(p, "17;",false);
+                        pk = msgReceivePk(p);
+                    }
+                    p.setPublicKey(pk);
+                    System.out.println("Recebi a chave de: " + p.getName());
                     p.serverHasPk = true;
                 }
             }
