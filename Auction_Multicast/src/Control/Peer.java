@@ -160,7 +160,7 @@ public class Peer implements Runnable
                         this.getIp(1) + ";");
                 dt++;
             };
-
+            sleeptc(100);
             this.isServer = false;
             if(isHighestPriority())
             {

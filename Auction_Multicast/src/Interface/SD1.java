@@ -25,7 +25,7 @@ public class SD1 {
         for(int i = 0; i < nPeers; i++)
         {
             Peer p;
-            p = new Peer(names[i], "192.168.109.242", port, true);       
+            p = new Peer(names[i], "10.3.2.86", port, true);       
             Thread t = new Thread((Runnable) p);
             t.start();    
             port++;
