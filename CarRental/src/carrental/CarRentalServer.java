@@ -17,8 +17,8 @@ public class CarRentalServer
         try 
         {
             Registry r = LocateRegistry.createRegistry(1010);
-            ServerSlave obj;
-            obj = new ServerSlave();
+            Server obj;
+            obj = new Server();
             
             r.rebind("CarRental", obj);
             System.out.println("Server running...");

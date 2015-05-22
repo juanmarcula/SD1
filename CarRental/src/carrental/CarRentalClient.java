@@ -1,5 +1,6 @@
 package carrental;
 
+import RMICarRental.ICarRentalServer;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -19,7 +20,7 @@ public class CarRentalClient
 {
     //RMI
     Registry r;
-    CarRental rent;
+    ICarRentalServer rent;
     
     //Design
     Interface.ClienteInterface tela;
@@ -33,7 +34,7 @@ public class CarRentalClient
         try 
         {
             r = LocateRegistry.getRegistry("localhost", 1010);
-            rent = (CarRental) r.lookup("CarRental"); //localizar o server
+            rent = (ICarRentalServer) r.lookup("CarRental"); //localizar o server
 
             tela = new Interface.ClienteInterface();
 

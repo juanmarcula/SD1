@@ -5,6 +5,7 @@
  */
 package carrental;
 
+import RMICarRental.ICarRentalClient;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -12,17 +13,16 @@ import java.rmi.server.UnicastRemoteObject;
  *
  * @author Laudelino
  */
-class ServerSlave extends UnicastRemoteObject implements CarRental 
+public class Client extends UnicastRemoteObject implements ICarRentalClient  
 {
-    public ServerSlave() throws RemoteException
+    public Client() throws RemoteException
     {
 
     }
-
-        //método que gera de forma randomica o Id do cliente
+    
     @Override
-    public synchronized int generateId() throws RemoteException 
+    public synchronized int notification() throws RemoteException
     {
         return 0;
-    }
-} 
+    }    
+}
