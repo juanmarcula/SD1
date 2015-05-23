@@ -42,7 +42,7 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
             rent = (ICarRentalServer) r.lookup("CarRental"); //localizar o server
 
             cars = new ArrayList<>();
-            
+            cars = rent.getCars();
             tela = new Interface.ClienteInterface();
 
             

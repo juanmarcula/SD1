@@ -17,44 +17,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Juan
  */
 public class CarRentalClient 
-{
-    //RMI
-    Registry r;
-    ICarRentalServer rent;
-    
-    //Design
-    Interface.ClienteInterface tela;
-    
-    //Local
-    int id = 0;
-    
-    
-    public CarRentalClient() 
-    {
-        try 
-        {
-            r = LocateRegistry.getRegistry("localhost", 1010);
-            rent = (ICarRentalServer) r.lookup("CarRental"); //localizar o server
-
-            tela = new Interface.ClienteInterface();
-
-            //o servidor vai gerar um ID, armazenar e retornar para cliente
-            System.out.println("Id antes: " + id);
-            id = rent.generateId();
-            System.out.println("Id depois: " + id);
-            
-            //cadastra o nome associado com o id
-            //rent.setName(nome, id);
-            //coloca as informações na interface gráfica
-            tela.setVisible(true);
-            //System.out.println("Cliente \"" + nome + "\" criado com ID:" + id);
-        } catch (RemoteException | NotBoundException ex) {
-            Logger.getLogger(CarRentalClient.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    
-    
+{   
     /**
      * @param args the command line arguments
      */
