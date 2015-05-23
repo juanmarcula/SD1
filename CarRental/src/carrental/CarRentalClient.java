@@ -39,7 +39,10 @@ public class CarRentalClient
             tela = new Interface.ClienteInterface();
 
             //o servidor vai gerar um ID, armazenar e retornar para cliente
+            System.out.println("Id antes: " + id);
             id = rent.generateId();
+            System.out.println("Id depois: " + id);
+            
             //cadastra o nome associado com o id
             //rent.setName(nome, id);
             //coloca as informações na interface gráfica
@@ -56,7 +59,12 @@ public class CarRentalClient
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        try {
+            // TODO code application logic here
+            Client c = new Client();
+        } catch (RemoteException ex) {
+            Logger.getLogger(CarRentalClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
         while(true){}
     }
     

@@ -15,5 +15,5 @@ import java.rmi.RemoteException;
 public interface ICarRentalClient extends Remote 
 {
     //Recebe notificação de evento
-    public int notification() throws RemoteException;
+    public boolean notification(String c, double rate) throws RemoteException;
 }

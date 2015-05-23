@@ -1,7 +1,11 @@
 package RMICarRental;
 
+import carrental.Car;
+import carrental.Client;
+import carrental.Rent;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
@@ -11,13 +15,15 @@ public interface ICarRentalServer  extends Remote
 {
     public int generateId() throws RemoteException;
     
+    public ArrayList<Car> getCars() throws RemoteException;
+    
     //Consulta
-    public int checkAvailability() throws RemoteException;
+    public double checkAvailability(Rent r, String c) throws RemoteException;
     
     //locação de veiculos
-    public int rentACar()  throws RemoteException;
+    public boolean rentACar(Rent r, String c)   throws RemoteException;
     
     //registrar interesse
-    public int subscribeCar() throws RemoteException;
+    public boolean subscribeCar(ICarRentalClient c, String car) throws RemoteException;
     
 }
