@@ -13,6 +13,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -62,6 +63,47 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
         }
     }
     
+    public double checkAvailabilityServer(String car, String pickUpPlace, 
+            String dropOffPlace, Date pickUpDate, Date dropOfDate)
+    {
+        try
+        {
+            return rent.checkAvailability(new Rent(pickUpPlace, dropOffPlace, pickUpDate, dropOfDate), car);
+        }
+        catch(Exception e)
+        {
+            return -1;
+        }
+    }
+    
+    public boolean rentACarServer(String car, String pickUpPlace, 
+            String dropOffPlace, Date pickUpDate, Date dropOfDate, int driverAge,
+            String ccNumber, String ccCode, String ccName, String ccExpDate)
+    {
+        try
+        {
+            return rent.rentACar(new Rent(pickUpPlace, dropOffPlace, pickUpDate, dropOfDate, driverAge,
+            ccNumber, ccCode, ccName, ccExpDate), car);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+    }
+    
+    public boolean subscribeCarServer(String car)
+    {
+        try
+        {
+            return rent.subscribeCar(this, car);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+    }
+    
+    //RMI
     @Override
     public synchronized boolean notification(String c, double rate) throws RemoteException
     {

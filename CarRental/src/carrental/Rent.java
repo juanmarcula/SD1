@@ -20,8 +20,34 @@ public class Rent
     Date dropOfDate;
     
     int driverAge;
-    String creditCard;
-    int nI;
+    String ccNumber;
+    String ccCode;
+    String ccName;
+    String ccExpDate;
+    
    
+    public Rent(String pickUpPlace, 
+            String dropOffPlace, Date pickUpDate, Date dropOfDate)
+    {
+        this.pickUpDate = pickUpDate;
+        this.pickUpLocation = pickUpPlace;
+        this.dropOfDate = dropOfDate;
+        this.dropOfLocation = dropOffPlace;
+    }
+    
+    public Rent(String pickUpPlace, String dropOffPlace, Date pickUpDate, Date dropOfDate,
+            int driverAge, String ccNumber, String ccCode, String ccName, String ccExpDate)
+    {
+        this.pickUpDate = pickUpDate;
+        this.pickUpLocation = pickUpPlace;
+        this.dropOfDate = dropOfDate;
+        this.dropOfLocation = dropOffPlace;
+        
+        this.driverAge = driverAge; 
+        this.ccNumber = ccNumber;
+        this.ccCode = ccCode;
+        this.ccName = ccName;
+        this.ccExpDate = ccExpDate;        
+    }
     
 }

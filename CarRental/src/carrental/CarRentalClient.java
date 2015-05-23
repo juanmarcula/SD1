@@ -22,10 +22,12 @@ public class CarRentalClient
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        try {
-            // TODO code application logic here
+        try 
+        {
             Client c = new Client();
-        } catch (RemoteException ex) {
+        } 
+        catch (RemoteException ex) 
+        {
             Logger.getLogger(CarRentalClient.class.getName()).log(Level.SEVERE, null, ex);
         }
         while(true){}
