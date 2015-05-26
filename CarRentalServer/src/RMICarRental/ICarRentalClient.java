@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public interface ICarRentalClient extends Remote 
 {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public interface ICarRentalServer  extends Remote 
 {

@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public class CarRentalServer 
 {

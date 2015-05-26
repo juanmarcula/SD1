@@ -10,7 +10,7 @@ import carrental.Server;
 import java.util.ArrayList;
 /**
  *
- * @author Juan
+ * @author Juan e Laudelino
  */
 public class ServidorInterface extends javax.swing.JFrame {
     private Server ser;
@@ -24,7 +24,11 @@ public class ServidorInterface extends javax.swing.JFrame {
         initComponents();
         this.setCars(ser.getCars());
     }
-    
+    /**
+     * Inicia a box com os carros cadastraos no servidor
+     * 
+     * @param c 
+     */
      public void setCars(ArrayList <Car> c){  
         for(Car oc:c){
             this.Carros.addItem(oc.getName());
@@ -102,12 +106,16 @@ public class ServidorInterface extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+ * Realiza um alteração no valor de uma diaria de um carro
+ * @param evt 
+ */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         String car = (String) this.Carros.getSelectedItem();
         double rate= Double.parseDouble(this.rate.getText());
         this.ser.setNewRate(car, rate);
+        this.rate.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

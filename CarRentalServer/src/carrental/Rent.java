@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public class Rent implements Serializable
 {

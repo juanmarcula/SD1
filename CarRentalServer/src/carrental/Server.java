@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public class Server extends UnicastRemoteObject implements ICarRentalServer 
 {
@@ -39,7 +39,10 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
         System.out.println("Id gerada: " + a);
         return a;
     }
-    
+    /**
+     * Retorna um array contendo todos os carros cadastrados no servidor
+     * @return 
+     */
     public ArrayList<Car> getCars()
     {
         return cars;
@@ -159,6 +162,11 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
         }
     }
     
+    /**
+     * Envia uma notificação ao cliente avisando que o valor da diaria de um carro foi alterada
+     * @param c
+     * @return 
+     */
     private boolean sendNotification(Car c)
     {
        
