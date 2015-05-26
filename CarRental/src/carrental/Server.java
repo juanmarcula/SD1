@@ -15,7 +15,7 @@ import java.util.ArrayList;
  *
  * @author Laudelino
  */
-class Server extends UnicastRemoteObject implements ICarRentalServer 
+public class Server extends UnicastRemoteObject implements ICarRentalServer 
 {
     ArrayList<Car> cars;
     

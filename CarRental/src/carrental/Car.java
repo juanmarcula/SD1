@@ -2,6 +2,8 @@ package carrental;
 
 import RMICarRental.ICarRentalClient;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -9,11 +11,17 @@ import java.util.ArrayList;
  */
 public class Car 
 {
+    /**
+     * PickUpPlace, acho que o pick up place tem que ser o da ultima reserva, senão não faz
+     * sentido ter um lugar.
+     * 
+     */
     String name;
     double rate;
     
     ArrayList<Rent> rents;
     ArrayList<ICarRentalClient> subscribers;
+    ArrayList<Date> notAvailable;
     //ArrayList<Double> clientInterestRate;;
     
     public Car(String n, double r)
@@ -22,8 +30,13 @@ public class Car
         this.rate = r;
         
         rents = new ArrayList<>();
+        notAvailable = new ArrayList<>();
         //subscribers = new ArrayList<>();
         
+    }
+    
+    public String getName(){
+        return name;
     }
     
     /**
@@ -35,6 +48,14 @@ public class Car
     {
         try
         {
+            ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
+            for(Date d1:Vetor){
+                for(Date d2:this.notAvailable){
+                    if(this.diferencaEmDias(d1, d2)==0){
+                        return -1;
+                    }
+                }
+            }
             return rate;
         }
         catch (Exception e)
@@ -52,6 +73,10 @@ public class Car
     {
         try
         {
+            ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
+            this.notAvailable.addAll(Vetor);
+            this.rents.add(r);
+            
             return true;
         }
         catch (Exception e)
@@ -82,5 +107,33 @@ public class Car
     public ArrayList<ICarRentalClient> getSubscribers()
     {
         return this.subscribers;
+    }
+    
+    public double diferencaEmDias(Date dataInicial, Date dataFinal){  
+        double result = 0;  
+        long diferenca = dataFinal.getTime() - dataInicial.getTime();  
+        double diferencaEmDias = (diferenca /1000) / 60 / 60 /24; //resultado é diferença entre as datas em dias  
+        long horasRestantes = (diferenca /1000) / 60 / 60 %24; //calcula as horas restantes  
+        result = diferencaEmDias + (horasRestantes /24d); //transforma as horas restantes em fração de dias  
+      
+        return result;  
+    }
+    
+    public ArrayList<Date> VetorDeDatasEntreDuasData(Date primeira,Date segunda){
+            if(this.diferencaEmDias(primeira, segunda)<0){
+                return null;
+            }
+            ArrayList<Date> vetor = new ArrayList<>();
+            Date endDate=primeira;
+            while(endDate!=segunda)
+            {
+               vetor.add(endDate);
+               Calendar cal = Calendar.getInstance();
+                cal.setTime(endDate); // Objeto Date() do usuário
+                cal.add(cal.DAY_OF_MONTH, +1);
+                endDate = cal.getTime();
+            }
+            vetor.add(segunda);
+            return vetor;
     }
 }

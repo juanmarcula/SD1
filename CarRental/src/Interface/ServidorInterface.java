@@ -5,18 +5,29 @@
  */
 
 package Interface;
-
+import carrental.Car;
+import carrental.Server;
+import java.util.ArrayList;
 /**
  *
  * @author Juan
  */
 public class ServidorInterface extends javax.swing.JFrame {
+    private Server ser;
 
     /**
      * Creates new form ServidorInterface
      */
-    public ServidorInterface() {
+    public ServidorInterface(Server ser) {
+        this.ser=ser;
+        this.setCars(ser.getCars());
         initComponents();
+    }
+    
+     public void setCars(ArrayList <Car> c){  
+        for(Car oc:c){
+            this.Carros.addItem(oc.getName());
+        }   
     }
 
     /**
@@ -31,18 +42,24 @@ public class ServidorInterface extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         Carros = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        rate = new javax.swing.JFormattedTextField();
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Servidor");
 
         jLabel1.setText("Carros:");
 
         jLabel2.setText("Valor da diária:");
 
-        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
+        rate.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter()));
 
         jButton1.setText("Atualizar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -59,7 +76,7 @@ public class ServidorInterface extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jFormattedTextField1)
+                            .addComponent(rate)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
                                 .addComponent(jButton1)
@@ -76,7 +93,7 @@ public class ServidorInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(rate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
                 .addContainerGap(7, Short.MAX_VALUE))
@@ -84,6 +101,13 @@ public class ServidorInterface extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String car = (String) this.Carros.getSelectedItem();
+        double rate= Double.parseDouble(this.rate.getText());
+        this.ser.setNewRate(car, rate);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,7 +139,7 @@ public class ServidorInterface extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ServidorInterface().setVisible(true);
+                //new ServidorInterface().setVisible(true);
             }
         });
     }
@@ -123,8 +147,8 @@ public class ServidorInterface extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox Carros;
     private javax.swing.JButton jButton1;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JFormattedTextField rate;
     // End of variables declaration//GEN-END:variables
 }

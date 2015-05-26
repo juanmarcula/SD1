@@ -44,7 +44,7 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
 
             cars = new ArrayList<>();
             cars = rent.getCars();
-            tela = new Interface.ClienteInterface();
+            tela = new Interface.ClienteInterface(this);
 
             
             
@@ -56,6 +56,7 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
             //cadastra o nome associado com o id
             //rent.setName(nome, id);
             //coloca as informações na interface gráfica
+            tela.setCars(cars);
             tela.setVisible(true);
             //System.out.println("Cliente \"" + nome + "\" criado com ID:" + id);
         } catch (RemoteException | NotBoundException ex) {

@@ -6,18 +6,33 @@
 
 package Interface;
 
+import carrental.Car;
+import carrental.Client;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Juan
  */
 public class ClienteInterface extends javax.swing.JFrame {
+    private Client cli;
 
     /**
      * Creates new form ClienteInterface
      */
-    public ClienteInterface() {
+    public ClienteInterface(Client cli) {
+        this.cli=cli;
         initComponents();
     }
+    
+    public void setCars(ArrayList <Car> c){  
+        for(Car oc:c){
+            this.Carro.addItem(oc.getName());
+        }   
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -51,7 +66,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         AnoVencimento = new javax.swing.JFormattedTextField();
         jLabel13 = new javax.swing.JLabel();
-        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        CodigoDeSeguranca = new javax.swing.JFormattedTextField();
         jLabel14 = new javax.swing.JLabel();
         Carro = new javax.swing.JComboBox();
         LocalRetirada = new javax.swing.JComboBox();
@@ -61,6 +76,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         Alugar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cliente");
 
         jLabel1.setText("Local de retirada do veículo:");
 
@@ -69,7 +85,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         jLabel4.setText("Data e horário de inicio:");
 
         try {
-            DataInicio.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/##")));
+            DataInicio.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
@@ -88,10 +104,15 @@ public class ClienteInterface extends javax.swing.JFrame {
         jLabel5.setText("Data e horário de término:");
 
         try {
-            DataTermino.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/##")));
+            DataTermino.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        DataTermino.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DataTerminoActionPerformed(evt);
+            }
+        });
 
         try {
             HoraTermino.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##:##")));
@@ -138,13 +159,13 @@ public class ClienteInterface extends javax.swing.JFrame {
         jLabel13.setText("Código de segurança:");
 
         try {
-            jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###")));
+            CodigoDeSeguranca.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        jFormattedTextField1.addActionListener(new java.awt.event.ActionListener() {
+        CodigoDeSeguranca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jFormattedTextField1ActionPerformed(evt);
+                CodigoDeSegurancaActionPerformed(evt);
             }
         });
 
@@ -174,7 +195,7 @@ public class ClienteInterface extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(CodigoDeSeguranca, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(101, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -187,7 +208,7 @@ public class ClienteInterface extends javax.swing.JFrame {
                 .addGap(6, 6, 6)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CodigoDeSeguranca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -205,6 +226,10 @@ public class ClienteInterface extends javax.swing.JFrame {
 
         jLabel14.setText("Carro:");
 
+        LocalRetirada.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Rio de Janeiro", "São Paulo", "Curitiba", "Salvador" }));
+
+        LocalDevolucao.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Rio de Janeiro", "São Paulo", "Curitiba", "Salvador" }));
+
         Consultar.setText("Consultar");
         Consultar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -220,6 +245,11 @@ public class ClienteInterface extends javax.swing.JFrame {
         });
 
         Alugar.setText("Alugar");
+        Alugar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AlugarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -239,15 +269,13 @@ public class ClienteInterface extends javax.swing.JFrame {
                                             .addComponent(jLabel5)
                                             .addComponent(jLabel4))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(DataTermino, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                                            .addComponent(DataInicio))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(DataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(HoraInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(DataTermino, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(HoraTermino, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addComponent(HoraInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(HoraTermino, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -342,18 +370,99 @@ public class ClienteInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_MesVencimentoActionPerformed
 
-    private void jFormattedTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField1ActionPerformed
+    private void CodigoDeSegurancaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CodigoDeSegurancaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jFormattedTextField1ActionPerformed
+    }//GEN-LAST:event_CodigoDeSegurancaActionPerformed
 
     private void ConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultarActionPerformed
         // TODO add your handling code here:
+        String car =(String) this.Carro.getSelectedItem();
+        String pickupPlace = (String) this.LocalRetirada.getSelectedItem();
+        String dropOffPlace = (String) this.LocalDevolucao.getSelectedItem();
+        
+        String pickUpSplit [] = this.DataInicio.getText().split("/");
+        int yearPick =Integer.parseInt( pickUpSplit[2]);
+        yearPick+=1900;
+        int monthPick =Integer.parseInt( pickUpSplit[1]);
+        int dayPick =Integer.parseInt( pickUpSplit[0]);
+        String pickUpSplit2 []=this.HoraInicio.getText().split(":");
+        int minutePick =Integer.parseInt( pickUpSplit2[1]);
+        int hourPick =Integer.parseInt( pickUpSplit2[0]);
+        Date pickUpDate = new Date(yearPick,monthPick,dayPick,hourPick,minutePick);
+        
+        String dropOffSplit [] = this.DataTermino.getText().split("/");
+        int yearDrop =Integer.parseInt( dropOffSplit[2]);
+        yearDrop+=1900;
+        int monthDrop =Integer.parseInt( dropOffSplit[1]);
+        int dayDrop =Integer.parseInt( dropOffSplit[0]);
+        String dropOffSplit2 []=this.HoraTermino.getText().split(":");
+        int minuteDrop =Integer.parseInt( dropOffSplit2[1]);
+        int hourDrop =Integer.parseInt( dropOffSplit2[0]);
+        Date dropOffDate = new Date(yearDrop,monthDrop,dayDrop,hourDrop,minuteDrop);
+        //String car, String pickUpPlace, String dropOffPlace, Date pickUpDate, Date dropOfDate
+        double rate = cli.checkAvailabilityServer(car, pickupPlace, dropOffPlace, pickUpDate, dropOffDate);
+        double dias = this.diferencaEmDias(dropOffDate, dropOffDate);
+        int diasInt=(int) Math.ceil(dias);
+        double preco = rate*diasInt;
+        JOptionPane.showMessageDialog(this,"A locação de carro ficará em $" +preco +"","Valor da Consulta",JOptionPane.PLAIN_MESSAGE);
     }//GEN-LAST:event_ConsultarActionPerformed
 
     private void InteresseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InteresseActionPerformed
         // TODO add your handling code here:
+        String car = (String) this.Carro.getSelectedItem();
+        cli.subscribeCarServer(car);
     }//GEN-LAST:event_InteresseActionPerformed
 
+    private void DataTerminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataTerminoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DataTerminoActionPerformed
+
+    private void AlugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AlugarActionPerformed
+        // TODO add your handling code here:
+        String car =(String) this.Carro.getSelectedItem();
+        String pickupPlace = (String) this.LocalRetirada.getSelectedItem();
+        String dropOffPlace = (String) this.LocalDevolucao.getSelectedItem();
+        
+        String pickUpSplit [] = this.DataInicio.getText().split("/");
+        int yearPick =Integer.parseInt( pickUpSplit[2]);
+        yearPick-=1900;
+        int monthPick =Integer.parseInt( pickUpSplit[1])-1;
+        int dayPick =Integer.parseInt( pickUpSplit[0]);
+        String pickUpSplit2 []=this.HoraInicio.getText().split(":");
+        int minutePick =Integer.parseInt( pickUpSplit2[1]);
+        int hourPick =Integer.parseInt( pickUpSplit2[0]);
+        Date pickUpDate = new Date(yearPick,monthPick,dayPick,hourPick,minutePick);
+        
+        String dropOffSplit [] = this.DataTermino.getText().split("/");
+        int yearDrop =Integer.parseInt( dropOffSplit[2]);
+        yearDrop-=1900;
+        int monthDrop =Integer.parseInt( dropOffSplit[1])-1;
+        int dayDrop =Integer.parseInt( dropOffSplit[0]);
+        String dropOffSplit2 []=this.HoraTermino.getText().split(":");
+        int minuteDrop =Integer.parseInt( dropOffSplit2[1]);
+        int hourDrop =Integer.parseInt( dropOffSplit2[0]);
+        Date dropOffDate = new Date(yearDrop,monthDrop,dayDrop,hourDrop,minuteDrop);
+        
+        int driveAge = Integer.parseInt(this.IdadeDoCondutor.getText());
+        String ccNumber = this.NumeroCartao.getText();
+        String ccCode = this.CodigoDeSeguranca.getText();
+        String ccName = this.NameOnCard.getText();
+        String ccExpDate = this.MesVencimento.getText() +"/" +this.AnoVencimento.getText();
+        cli.rentACarServer(car, pickupPlace, dropOffPlace, pickUpDate, dropOffDate, driveAge, ccNumber, ccCode, ccName, ccExpDate);
+        //String car, String pickUpPlace, String dropOffPlace, Date pickUpDate, Date dropOfDate, int driverAge,
+            //String ccNumber, String ccCode, String ccName, String ccExpDate
+    }//GEN-LAST:event_AlugarActionPerformed
+
+    public double diferencaEmDias(Date dataInicial, Date dataFinal){  
+        double result = 0;  
+        long diferenca = dataFinal.getTime() - dataInicial.getTime();  
+        double diferencaEmDias = (diferenca /1000) / 60 / 60 /24; //resultado é diferença entre as datas em dias  
+        long horasRestantes = (diferenca /1000) / 60 / 60 %24; //calcula as horas restantes  
+        result = diferencaEmDias + (horasRestantes /24d); //transforma as horas restantes em fração de dias  
+      
+        return result;  
+    }  
+    
     /**
      * @param args the command line arguments
      */
@@ -384,7 +493,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ClienteInterface().setVisible(true);
+                //new ClienteInterface().setVisible(true);
             }
         });
     }
@@ -393,6 +502,7 @@ public class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JButton Alugar;
     private javax.swing.JFormattedTextField AnoVencimento;
     private javax.swing.JComboBox Carro;
+    private javax.swing.JFormattedTextField CodigoDeSeguranca;
     private javax.swing.JButton Consultar;
     private javax.swing.JFormattedTextField DataInicio;
     private javax.swing.JFormattedTextField DataTermino;
@@ -405,7 +515,6 @@ public class ClienteInterface extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField MesVencimento;
     private javax.swing.JTextField NameOnCard;
     private javax.swing.JFormattedTextField NumeroCartao;
-    private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
