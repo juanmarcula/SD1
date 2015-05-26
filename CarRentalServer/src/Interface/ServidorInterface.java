@@ -20,8 +20,9 @@ public class ServidorInterface extends javax.swing.JFrame {
      */
     public ServidorInterface(Server ser) {
         this.ser=ser;
-        this.setCars(ser.getCars());
+        
         initComponents();
+        this.setCars(ser.getCars());
     }
     
      public void setCars(ArrayList <Car> c){  

@@ -16,7 +16,7 @@ public class CarRentalServer
     public static void main(String[] args){
         try 
         {
-            Registry r = LocateRegistry.createRegistry(1010);
+            Registry r = LocateRegistry.createRegistry(8099);
             Server obj;
             obj = new Server();
             

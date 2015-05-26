@@ -5,6 +5,7 @@
  */
 package carrental;
 
+import Interface.ServidorInterface;
 import RMICarRental.ICarRentalClient;
 import RMICarRental.ICarRentalServer;
 import java.rmi.RemoteException;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 public class Server extends UnicastRemoteObject implements ICarRentalServer 
 {
     ArrayList<Car> cars;
+    private ServidorInterface tela;
     
     public Server() throws RemoteException
     {
@@ -25,6 +27,8 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
         cars.add(new Car("Uno", 75.9));
         cars.add(new Car("Gol", 99.9));
         cars.add(new Car("Corsa", 80.9));
+        tela = new Interface.ServidorInterface(this);
+        tela.setVisible(true);
     }
 
     //método que gera de forma randomica o Id do cliente
@@ -36,7 +40,7 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
         return a;
     }
     
-    public synchronized ArrayList<Car> getCars()
+    public ArrayList<Car> getCars()
     {
         return cars;
     }
@@ -50,7 +54,7 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
      * @throws RemoteException 
      */
     @Override
-    public synchronized double checkAvailability(Rent r, String c) throws RemoteException
+    public double checkAvailability(Rent r, String c) throws RemoteException
     {
         try
         {
@@ -77,7 +81,7 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
      * @return true em caso de sucesso, false caso contrario
      * @throws RemoteException 
      */
-    public synchronized boolean rentACar(Rent r, String c)  throws RemoteException
+    public boolean rentACar(Rent r, String c)  throws RemoteException
     {
         try
         {
@@ -102,8 +106,9 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
      * @return true em caso de sucesso, false caso contrario
      * @throws RemoteException 
      */
-    public synchronized boolean subscribeCar(ICarRentalClient c, String car) throws RemoteException
-    {
+    public boolean subscribeCar(ICarRentalClient c, String car) throws RemoteException
+    { 
+        System.out.println("oi");
         try
         {
             for(Car aux : cars)
@@ -156,6 +161,7 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
     
     private boolean sendNotification(Car c)
     {
+       
         try
         {
             for(ICarRentalClient aux : c.subscribers)
