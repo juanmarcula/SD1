@@ -9,9 +9,10 @@ package Interface;
 import carrental.Car;
 import carrental.Client;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
-
+//import org.joda.time.Days;
 /**
  *
  * @author Juan
@@ -89,6 +90,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        DataInicio.setText("30/01/1992");
         DataInicio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DataInicioActionPerformed(evt);
@@ -100,6 +102,12 @@ public class ClienteInterface extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        HoraInicio.setText("10:10");
+        HoraInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HoraInicioActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("Data e horário de término:");
 
@@ -108,6 +116,7 @@ public class ClienteInterface extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        DataTermino.setText("02/02/1992");
         DataTermino.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DataTerminoActionPerformed(evt);
@@ -119,10 +128,12 @@ public class ClienteInterface extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        HoraTermino.setText("10:10");
 
         jLabel6.setText("Idade do condutor:");
 
         IdadeDoCondutor.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        IdadeDoCondutor.setText("18");
         IdadeDoCondutor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 IdadeDoCondutorActionPerformed(evt);
@@ -382,8 +393,8 @@ public class ClienteInterface extends javax.swing.JFrame {
         
         String pickUpSplit [] = this.DataInicio.getText().split("/");
         int yearPick =Integer.parseInt( pickUpSplit[2]);
-        yearPick+=1900;
-        int monthPick =Integer.parseInt( pickUpSplit[1]);
+        yearPick-=1900;
+        int monthPick =Integer.parseInt( pickUpSplit[1])-1;
         int dayPick =Integer.parseInt( pickUpSplit[0]);
         String pickUpSplit2 []=this.HoraInicio.getText().split(":");
         int minutePick =Integer.parseInt( pickUpSplit2[1]);
@@ -392,8 +403,8 @@ public class ClienteInterface extends javax.swing.JFrame {
         
         String dropOffSplit [] = this.DataTermino.getText().split("/");
         int yearDrop =Integer.parseInt( dropOffSplit[2]);
-        yearDrop+=1900;
-        int monthDrop =Integer.parseInt( dropOffSplit[1]);
+        yearDrop-=1900;
+        int monthDrop =Integer.parseInt( dropOffSplit[1])-1;
         int dayDrop =Integer.parseInt( dropOffSplit[0]);
         String dropOffSplit2 []=this.HoraTermino.getText().split(":");
         int minuteDrop =Integer.parseInt( dropOffSplit2[1]);
@@ -401,10 +412,26 @@ public class ClienteInterface extends javax.swing.JFrame {
         Date dropOffDate = new Date(yearDrop,monthDrop,dayDrop,hourDrop,minuteDrop);
         //String car, String pickUpPlace, String dropOffPlace, Date pickUpDate, Date dropOfDate
         double rate = cli.checkAvailabilityServer(car, pickupPlace, dropOffPlace, pickUpDate, dropOffDate);
-        double dias = this.diferencaEmDias(dropOffDate, dropOffDate);
-        int diasInt=(int) Math.ceil(dias);
-        double preco = rate*diasInt;
-        JOptionPane.showMessageDialog(this,"A locação de carro ficará em $" +preco +"","Valor da Consulta",JOptionPane.PLAIN_MESSAGE);
+        if(rate!=-1){
+            
+            double dias = this.diferencaEmDias(pickUpDate, dropOffDate);
+            
+            //System.out.println(Days.daysBetween(pickUpDate, dropOffDate).getDays());
+            int diasInt=(int) Math.ceil(dias);
+            if(diasInt==0)
+            {
+                diasInt++;
+            }   
+            //diasInt++;
+            //int diasInt = this.ContaDias(pickUpDate, dropOffDate);
+            System.out.println(diasInt);
+            double preco = rate*diasInt;
+            System.out.println(rate);
+            JOptionPane.showMessageDialog(this,"A locação de carro ficará em $" +preco +"","Valor da Consulta",JOptionPane.PLAIN_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(this,"Data Indisponivel ou Data digitada incorretamente","Data Indisponível",JOptionPane.PLAIN_MESSAGE);
+        }
     }//GEN-LAST:event_ConsultarActionPerformed
 
     private void InteresseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InteresseActionPerformed
@@ -448,10 +475,20 @@ public class ClienteInterface extends javax.swing.JFrame {
         String ccCode = this.CodigoDeSeguranca.getText();
         String ccName = this.NameOnCard.getText();
         String ccExpDate = this.MesVencimento.getText() +"/" +this.AnoVencimento.getText();
-        cli.rentACarServer(car, pickupPlace, dropOffPlace, pickUpDate, dropOffDate, driveAge, ccNumber, ccCode, ccName, ccExpDate);
+        boolean retorno = cli.rentACarServer(car, pickupPlace, dropOffPlace, pickUpDate, dropOffDate, driveAge, ccNumber, ccCode, ccName, ccExpDate);
+        if(retorno){
+            JOptionPane.showMessageDialog(this,"O Carro foi alugado por: " +ccName,"Confirmação de aluguel",JOptionPane.PLAIN_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(this,"O carro não está disponivel","Sorry =(",JOptionPane.PLAIN_MESSAGE);
+        }
         //String car, String pickUpPlace, String dropOffPlace, Date pickUpDate, Date dropOfDate, int driverAge,
             //String ccNumber, String ccCode, String ccName, String ccExpDate
     }//GEN-LAST:event_AlugarActionPerformed
+
+    private void HoraInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HoraInicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_HoraInicioActionPerformed
 
     public double diferencaEmDias(Date dataInicial, Date dataFinal){  
         double result = 0;  
@@ -461,7 +498,27 @@ public class ClienteInterface extends javax.swing.JFrame {
         result = diferencaEmDias + (horasRestantes /24d); //transforma as horas restantes em fração de dias  
       
         return result;  
-    }  
+    }
+    
+    public int ContaDias(Date dataInicial, Date dataFinal){
+            int cont=0;
+            if(this.diferencaEmDias(dataInicial, dataFinal)<0){
+                return -1;
+            }
+            
+            Date endDate=dataInicial;
+            cont++;
+            while(this.diferencaEmDias(endDate, dataFinal)==0)
+            {
+               cont++;
+               Calendar cal = Calendar.getInstance();
+                cal.setTime(endDate); // Objeto Date() do usuário
+                cal.add(cal.DAY_OF_MONTH, +1);
+                endDate = cal.getTime();
+            }
+            cont++;
+            return cont;
+    }
     
     /**
      * @param args the command line arguments

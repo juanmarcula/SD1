@@ -1,6 +1,7 @@
 package carrental;
 
 import RMICarRental.ICarRentalClient;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -9,7 +10,8 @@ import java.util.Date;
  *
  * @author Laudelino
  */
-public class Car 
+public class Car implements Serializable
+
 {
     /**
      * PickUpPlace, acho que o pick up place tem que ser o da ultima reserva, senão não faz
@@ -31,7 +33,7 @@ public class Car
         
         rents = new ArrayList<>();
         notAvailable = new ArrayList<>();
-        //subscribers = new ArrayList<>();
+        subscribers = new ArrayList<>();
         
     }
     
@@ -49,7 +51,13 @@ public class Car
         try
         {
             ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
+            if(Vetor.isEmpty()){
+                return -1;
+            }
             for(Date d1:Vetor){
+                if(this.notAvailable.isEmpty()){
+                    break;
+                }
                 for(Date d2:this.notAvailable){
                     if(this.diferencaEmDias(d1, d2)==0){
                         return -1;
@@ -76,7 +84,7 @@ public class Car
             ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
             this.notAvailable.addAll(Vetor);
             this.rents.add(r);
-            
+            System.out.println(this.notAvailable.toString());
             return true;
         }
         catch (Exception e)
@@ -125,7 +133,7 @@ public class Car
             }
             ArrayList<Date> vetor = new ArrayList<>();
             Date endDate=primeira;
-            while(endDate!=segunda)
+            while(this.diferencaEmDias(endDate, segunda)==0)
             {
                vetor.add(endDate);
                Calendar cal = Calendar.getInstance();

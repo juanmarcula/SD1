@@ -39,7 +39,7 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
     {
         try 
         {
-            r = LocateRegistry.getRegistry("localhost", 1010);
+            r = LocateRegistry.getRegistry("localhost", 8099);
             rent = (ICarRentalServer) r.lookup("CarRental"); //localizar o server
 
             cars = new ArrayList<>();
@@ -108,6 +108,7 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
     @Override
     public synchronized boolean notification(String c, double rate) throws RemoteException
     {
+        System.out.println("OIIII");
         try
         {
             for(Car aux : cars)
@@ -115,7 +116,8 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
                 if(aux.name.equals(c))
                 {
                     aux.rate = rate;
-                    JOptionPane.showConfirmDialog(tela, "Carro " + c + " esta com diaria R$" + rate);
+                    //JOptionPane.showConfirmDialog(tela, );
+                    JOptionPane.showMessageDialog(tela,"Carro " + c + " esta com diaria R$" + rate,"O gerente ficou maluco!!!!",JOptionPane.PLAIN_MESSAGE);
                     return true;
                 }
             }

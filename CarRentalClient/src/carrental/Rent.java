@@ -5,13 +5,15 @@
  */
 package carrental;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  *
  * @author Laudelino
  */
-public class Rent 
+public class Rent implements Serializable
+
 {
     String pickUpLocation;
     String dropOfLocation;
