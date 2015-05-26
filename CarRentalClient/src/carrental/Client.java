@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public class Client extends UnicastRemoteObject implements ICarRentalClient  
 {
@@ -63,7 +63,16 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
             Logger.getLogger(CarRentalClient.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /**
+     * Verifica se o carro está disponivel e retorna sua diaria
+     * 
+     * @param car
+     * @param pickUpPlace
+     * @param dropOffPlace
+     * @param pickUpDate
+     * @param dropOfDate
+     * @return 
+     */
     public double checkAvailabilityServer(String car, String pickUpPlace, 
             String dropOffPlace, Date pickUpDate, Date dropOfDate)
     {
@@ -77,6 +86,21 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
         }
     }
     
+    /**
+     * Tenta alugar um carro e retorna se foi possivel ou não, True ou False
+     * 
+     * @param car
+     * @param pickUpPlace
+     * @param dropOffPlace
+     * @param pickUpDate
+     * @param dropOfDate
+     * @param driverAge
+     * @param ccNumber
+     * @param ccCode
+     * @param ccName
+     * @param ccExpDate
+     * @return 
+     */
     public boolean rentACarServer(String car, String pickUpPlace, 
             String dropOffPlace, Date pickUpDate, Date dropOfDate, int driverAge,
             String ccNumber, String ccCode, String ccName, String ccExpDate)
@@ -91,7 +115,12 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
             return false;
         }
     }
-    
+    /**
+     * Registra interrese em um carro.
+     * 
+     * @param car
+     * @return 
+     */
     public boolean subscribeCarServer(String car)
     {
         try
@@ -104,6 +133,13 @@ public class Client extends UnicastRemoteObject implements ICarRentalClient
         }
     }
     
+    /**
+     * Gera uma notificação na tela do usuario avisando que o valor da diaria de um carro foi alterada
+     * @param c
+     * @param rate
+     * @return
+     * @throws RemoteException 
+     */
     //RMI
     @Override
     public synchronized boolean notification(String c, double rate) throws RemoteException

@@ -8,7 +8,7 @@ import java.util.Date;
 
 /**
  *
- * @author Laudelino
+ * @author Juan e Laudelino
  */
 public class Car implements Serializable
 
@@ -37,6 +37,11 @@ public class Car implements Serializable
         
     }
     
+    /**
+     * Retorna o nome do carro
+     * 
+     * @return 
+     */
     public String getName(){
         return name;
     }
@@ -111,12 +116,25 @@ public class Car implements Serializable
             return false;
         }
     }
-            
+     
+    /**
+     * Retorna um vetor contendo os clientes que mostraram interesse nesse carro.
+     * 
+     * @return 
+     */
     public ArrayList<ICarRentalClient> getSubscribers()
     {
         return this.subscribers;
     }
-    
+    /**
+     * Calcula a diferença em dias entre a dataInicial e a dataFinal, sendo que se a dataInicial for depois da dataFinal
+     * a função retorna numeros negativos, se dataInicial antes de dataFinal retorna o valor positivo de dias entre as duas
+     * datas. o resultado é double pois ele retorna a fração de dias em relação a horas.
+     * 
+     * @param dataInicial
+     * @param dataFinal
+     * @return 
+     */
     public double diferencaEmDias(Date dataInicial, Date dataFinal){  
         double result = 0;  
         long diferenca = dataFinal.getTime() - dataInicial.getTime();  
@@ -127,13 +145,21 @@ public class Car implements Serializable
         return result;  
     }
     
+    /**
+     * Cria um vetor de Date contendo todas as datas entre primeira e segunda, sendo que o vetor inclui a primeira e
+     * a segunda
+     * 
+     * @param primeira
+     * @param segunda
+     * @return 
+     */
     public ArrayList<Date> VetorDeDatasEntreDuasData(Date primeira,Date segunda){
             if(this.diferencaEmDias(primeira, segunda)<0){
                 return null;
             }
             ArrayList<Date> vetor = new ArrayList<>();
             Date endDate=primeira;
-            while(this.diferencaEmDias(endDate, segunda)==0)
+            while(this.diferencaEmDias(endDate, segunda)!=0)
             {
                vetor.add(endDate);
                Calendar cal = Calendar.getInstance();

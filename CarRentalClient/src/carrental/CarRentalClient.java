@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author Juan
+ * @author Juan e Laudelino
  */
 public class CarRentalClient 
 {   

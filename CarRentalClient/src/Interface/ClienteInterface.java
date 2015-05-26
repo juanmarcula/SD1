@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 //import org.joda.time.Days;
 /**
  *
- * @author Juan
+ * @author Juan e Laudelino
  */
 public class ClienteInterface extends javax.swing.JFrame {
     private Client cli;
@@ -27,7 +27,12 @@ public class ClienteInterface extends javax.swing.JFrame {
         this.cli=cli;
         initComponents();
     }
-    
+    /**
+     * Preenche os valores do box de carros
+     * 
+     * 
+     * @param c 
+     */
     public void setCars(ArrayList <Car> c){  
         for(Car oc:c){
             this.Carro.addItem(oc.getName());
@@ -385,6 +390,11 @@ public class ClienteInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_CodigoDeSegurancaActionPerformed
 
+    /**
+     * Gera um consulta sobre o aluguel do carro retorna o valor total da locação se ela for possivel
+     * ou uma mensaguem de data indisponivel ou dados digitados errados.
+     * @param evt 
+     */
     private void ConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultarActionPerformed
         // TODO add your handling code here:
         String car =(String) this.Carro.getSelectedItem();
@@ -434,6 +444,11 @@ public class ClienteInterface extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ConsultarActionPerformed
 
+ /**
+  * Registra o interresse de receber notificações a respeito de um carro
+  * 
+  * @param evt 
+  */
     private void InteresseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_InteresseActionPerformed
         // TODO add your handling code here:
         String car = (String) this.Carro.getSelectedItem();
@@ -443,7 +458,11 @@ public class ClienteInterface extends javax.swing.JFrame {
     private void DataTerminoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DataTerminoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DataTerminoActionPerformed
-
+/**
+ * Realiza o aluguel do carro se possivel, caso contrario retorna uma mensagem que a data não está disponivel
+ * 
+ * @param evt 
+ */
     private void AlugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AlugarActionPerformed
         // TODO add your handling code here:
         String car =(String) this.Carro.getSelectedItem();
@@ -490,6 +509,14 @@ public class ClienteInterface extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_HoraInicioActionPerformed
 
+    /**
+     * Calcula a diferença em dias entre duas datas, retornando o numero de dias entre a dataInical e a dataFinal
+     * sendo que esse resultado pode ser negativo ou positivo
+     * 
+     * @param dataInicial
+     * @param dataFinal
+     * @return 
+     */
     public double diferencaEmDias(Date dataInicial, Date dataFinal){  
         double result = 0;  
         long diferenca = dataFinal.getTime() - dataInicial.getTime();  
@@ -500,25 +527,6 @@ public class ClienteInterface extends javax.swing.JFrame {
         return result;  
     }
     
-    public int ContaDias(Date dataInicial, Date dataFinal){
-            int cont=0;
-            if(this.diferencaEmDias(dataInicial, dataFinal)<0){
-                return -1;
-            }
-            
-            Date endDate=dataInicial;
-            cont++;
-            while(this.diferencaEmDias(endDate, dataFinal)==0)
-            {
-               cont++;
-               Calendar cal = Calendar.getInstance();
-                cal.setTime(endDate); // Objeto Date() do usuário
-                cal.add(cal.DAY_OF_MONTH, +1);
-                endDate = cal.getTime();
-            }
-            cont++;
-            return cont;
-    }
     
     /**
      * @param args the command line arguments
