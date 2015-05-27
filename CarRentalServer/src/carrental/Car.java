@@ -78,14 +78,19 @@ public class Car implements Serializable
     }
     
     /**
+     * 
      * Tenta alugar um carro, se for possivel, retorna true, caso contrario, false
      * @param r
      * @return 
      */
-    public boolean rent(Rent r)
+    public synchronized boolean rent(Rent r)
     {
+        //Fazer o teste se está disponivel ou não
         try
         {
+            if(this.VerificaDisponibilidade(r)==-1){
+                return false;
+            }
             ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
             this.notAvailable.addAll(Vetor);
             this.rents.add(r);
@@ -169,5 +174,28 @@ public class Car implements Serializable
             }
             vetor.add(segunda);
             return vetor;
+    }
+    
+    /**
+     * Verifica se um carro está disponivel ou não, caso não esteja disponivel retorna -1, em caso de disponivel retorna 1
+     * @param r
+     * @return 
+     */
+    public int VerificaDisponibilidade(Rent r){
+        ArrayList<Date> Vetor = this.VetorDeDatasEntreDuasData(r.pickUpDate, r.dropOfDate);
+            if(Vetor.isEmpty()){
+                return -1;
+            }
+            for(Date d1:Vetor){
+                if(this.notAvailable.isEmpty()){
+                    break;
+                }
+                for(Date d2:this.notAvailable){
+                    if(this.diferencaEmDias(d1, d2)==0){
+                        return -1;
+                    }
+                }
+            }
+            return 1;
     }
 }
