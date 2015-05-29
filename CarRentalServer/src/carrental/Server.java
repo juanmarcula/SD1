@@ -111,7 +111,6 @@ public class Server extends UnicastRemoteObject implements ICarRentalServer
      */
     public boolean subscribeCar(ICarRentalClient c, String car) throws RemoteException
     { 
-        System.out.println("oi");
         try
         {
             for(Car aux : cars)
